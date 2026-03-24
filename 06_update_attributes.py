@@ -2687,6 +2687,135 @@ def update_year_prot(state, state_fc, match_table, local_fc=None,
                 continue
     print(f'Updated YearProt for {c} rows!')
 
+### Function to correct 2003 CT rows ###
+# There is a data error that will hopefully be resolves in the future and this code
+# will no longer be needed. The issue is that in 2018 TNC data, there are many rows
+# in CT where YearProt = 2003 but the DATE_PREC says "pre" -- this means the row was
+# protected at some point before 2003. In 2022 TNC data (and also PADUS 4.0 data)
+# the YEAR_EST field is 2003 but there's no indication this is latest possible year.
+# Therefore, we don't rely on this data and we need to either 1) get a different year
+# for these CT rows, or 2) set it to 0 as we don't have a reliable estimate.
+#
+# The argument unknown_only is not relevant for this function because we are focused
+# on rows where YearProt = 2003 in NEPOS.
+#
+# take_only_known is still relevant because you can run the function once with set to
+# True and see if there are any non-2003 AND non-zero years available in other sources.
+# And if not (which is likely the case) you can run it again with take_only_known set
+# to False. new_data_only is also relevant as this could be done for new rows only
+# or all data.
+def correct_ct_2003_rows(state_fc, match_table, take_only_known=True, new_data_only=True):
+    state = 'CT'
+
+    # Subset source data
+    if take_only_known == False:
+        src_query = "State = '" + state + "'"
+    elif take_only_known == True:
+        src_query = "State = '" + state + "' AND YearProt > 0 AND YearProt IS NOT NULL"
+
+    nced_year_prot = {key: value for (key, value) in arcpy.da.SearchCursor(nced, ['UID', 'YearProt'], where_clause=src_query)}
+    padus_year_prot = {key: value for (key, value) in arcpy.da.SearchCursor(padus, ['UID', 'YearProt'], where_clause=src_query)}
+    state_year_prot = {key: value for (key, value) in arcpy.da.SearchCursor(state_fc, ['UID', 'YearProt'], where_clause=src_query)}
+
+    # Subset NEPOS for UpdateCursor based on function parameters
+    # We are just focused on CT rows where YearProt is 2003, but this
+    # can include either just new data or all data
+    if new_data_only == True:
+        query = "State = 'CT' AND FinalID IS NULL AND YearProt = 2003"
+    elif new_data_only == False:
+        query = "State = 'CT' AND YearProt = 2003"
+
+    # Get state column name in match table
+    state_items = get_state_info(state)
+    state_id_col = state_items[0]
+    state_code_col = state_items[1]
+    state_pct_overlap_col = state_items[2]
+    state_src = state_items[3]
+
+    fields = ['FinalID2', 'PolySource', 'PolySource_FeatID', 
+              'YearProt', 'Source_YearProt', 'Source_YearProt_FeatID']
+    c = 0
+    with arcpy.da.UpdateCursor(pos, fields, query) as cur:
+        for row in cur:
+            try:
+                # Get current year
+                old_yearprot = row[3]
+
+                # State match codes
+                state_match_ss = match_table.loc[match_table['FinalID2'] == row[0], [state_id_col, state_code_col, state_pct_overlap_col]].drop_duplicates()
+                state_matched_src_id = state_match_ss.iloc[0, 0]
+                state_match_code = state_match_ss.iloc[0, 1]
+                state_pct_overlap = state_match_ss.iloc[0, 2]
+                state_orig_id = get_src_orig_id(state, state_matched_src_id)
+                try:
+                    state_year = get_source_attribute(state_year_prot, state_orig_id)
+                except Exception:
+                    print(f'Assigning match code -1 to {state} feature P{state_orig_id}')
+                    state_match_code = -1
+                
+                # NCED match codes
+                nced_match_ss = match_table.loc[match_table['FinalID2'] == row[0], ["nced_id", "nced_match_code", "nced_pct_overlap"]].drop_duplicates()
+                nced_matched_src_id = nced_match_ss.iloc[0, 0]
+                nced_match_code = nced_match_ss.iloc[0, 1]
+                nced_pct_overlap = nced_match_ss.iloc[0, 2]
+                nced_orig_id = get_src_orig_id('NCED', nced_matched_src_id)
+                try:
+                    nced_year = get_source_attribute(nced_year_prot, nced_orig_id)
+                except Exception:
+                    print(f'Assigning match code -1 to NCED feature {nced_orig_id}')
+                    nced_match_code = -1
+                
+                # PADUS match codes
+                padus_match_ss = match_table.loc[match_table['FinalID2'] == row[0], ["padus_id", "padus_match_code", "padus_pct_overlap"]].drop_duplicates()
+                padus_matched_src_id = padus_match_ss.iloc[0, 0]
+                padus_match_code = padus_match_ss.iloc[0, 1]
+                padus_pct_overlap = padus_match_ss.iloc[0, 2]
+                padus_orig_id = get_src_orig_id('PADUS', padus_matched_src_id)
+                try:
+                    padus_year = get_source_attribute(padus_year_prot, padus_orig_id)
+                except Exception:
+                    print(f'Assigning match code -1 to PADUS feature {padus_orig_id}')
+                    padus_match_code = -1
+                
+                # For each source, we compare the match code and % overlap and then update the row as long
+                # as the year is not from a manual source. The conditionals do not check for the value
+                # of the source year -- that should be handled in take_only_known and unknown_only arguments!
+                if (min_match_code <= state_match_code <= max_match_code or (state_match_code == 10 and state_pct_overlap >= min_pct_overlap)):
+                    if (row[7] == 1 or 'Harvard Forest' in row[4] or 'SRM' in row[4]) and state_year != row[3]:
+                            row[8] = f"Year conflict b/w NEPOS and {state_src}"
+                    elif 'Harvard Forest' in row[4] and state_year == row[3]:
+                            row[8] = f"Harvard Forest year matches {state_src}"
+                    else:
+                        row[3] = state_year
+                        row[4] = state_src
+                        row[5] = state_orig_id
+                        c = c + 1
+                elif (min_match_code <= nced_match_code <= max_match_code or (nced_match_code == 10 and nced_pct_overlap >= min_pct_overlap)):
+                    if (row[7] == 1 or 'Harvard Forest' in row[4] or 'SRM' in row[4]) and nced_year != row[3]:
+                            row[8] = f"Year conflict b/w NEPOS and {nced_src}"
+                    elif 'Harvard Forest' in row[4] and nced_year == row[3]:
+                            row[8] = f"Harvard Forest year matches {nced_src}"
+                    else:
+                        row[3] = nced_year
+                        row[4] = nced_src
+                        row[5] = nced_orig_id
+                        c = c + 1
+                elif (min_match_code <= padus_match_code <= max_match_code or (padus_match_code == 10 and padus_pct_overlap >= min_pct_overlap)):
+                    if (row[7] == 1 or 'Harvard Forest' in row[4] or 'SRM' in row[4]) and padus_year != row[3]:
+                            row[8] = f"Year conflict b/w NEPOS and {padus_src}"
+                    elif 'Harvard Forest' in row[4] and padus_year == row[3]:
+                            row[8] = f"Harvard Forest year matches {padus_src}"
+                    else:
+                        row[3] = padus_year
+                        row[4] = padus_src
+                        row[5] = padus_orig_id
+                        c = c + 1
+                cur.updateRow(row)  # Update YearProt
+            except Exception:
+                print(traceback.format_exc())
+                continue
+    print(f'Correct YearProt for {c} rows!')
+
 
 #### FEE YEAR AND EASE YEAR ####
 # FeeYear and EaseYear are populated based on ProtType.
