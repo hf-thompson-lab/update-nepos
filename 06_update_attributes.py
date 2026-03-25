@@ -2704,6 +2704,10 @@ def update_year_prot(state, state_fc, match_table, local_fc=None,
 # And if not (which is likely the case) you can run it again with take_only_known set
 # to False. new_data_only is also relevant as this could be done for new rows only
 # or all data.
+#
+# NOTE: After this, FeeYear and EaseYear should be checked for these rows (if it is
+# possible that FeeYear or EaseYear was set based on the 2003 value). If this function
+# is always run before running function for FeeYear/EaseYear, that shouldn't be an issue.
 def correct_ct_2003_rows(state_fc, match_table, take_only_known=True, new_data_only=True):
     state = 'CT'
 
@@ -3305,63 +3309,18 @@ vt_match_table = pd.read_csv("D:/Lee/POS/Update_2023/Data/matching/nepos_vt_matc
                              dtype={"FinalID2": "string", "PolySource": "string", "PolySource_FeatID": "string",
                                     "vt_id": "string", "tnc_id": "string", "nced_id": "string", "padus_id": "string"})
 
+# March 2026 - observed some data issues with 2003 in CT
+# Issue was related to TNC dates from 2003 - all CT rows w/ YearProt 2003 in TNC 2018 data have
+# date precision "pre" which means it was protected before 2003 not during 2003. Unfortunately
+# these got picked up by PADUS and there's now very little confidence in any CT data from 2003.
+# So we are going to correct it and probably set most of these to 0 (unknown) unless there is
+# another valid year from a different source (unlikely in CT)
+pos = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction.gdb\\nepos_v2_0_sp_internal"
+ct_match_table = pd.read_csv("D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\match_tables\\nepos_ct_matches_20250306.csv")
+ct_deep = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_data\\Update_2025_v2\\source_and_aux_data.gdb\\CT_DEEP_Property_albers_sp_2025_01"
+
 try:
-    correct_private_names('VT', 'FeeOwner', new_data_only=False)
-    correct_private_names('ME', 'FeeOwner', new_data_only=False)
-    correct_private_names('CT', 'FeeOwner', new_data_only=False)
-    correct_private_names('NH', 'FeeOwner', new_data_only=False)
-    correct_private_names('RI', 'FeeOwner', new_data_only=False)
-    correct_private_names('ME', 'FeeOwner', new_data_only=False)
-    correct_private_names('VT', 'IntHolder1', new_data_only=False)
-    correct_private_names('ME', 'IntHolder1', new_data_only=False)
-    correct_private_names('CT', 'IntHolder1', new_data_only=False)
-    correct_private_names('NH', 'IntHolder1', new_data_only=False)
-    correct_private_names('RI', 'IntHolder1', new_data_only=False)
-    correct_private_names('ME', 'IntHolder1', new_data_only=False)
-    correct_private_names('VT', 'IntHolder2', new_data_only=False)
-    correct_private_names('ME', 'IntHolder2', new_data_only=False)
-    correct_private_names('CT', 'IntHolder2', new_data_only=False)
-    correct_private_names('NH', 'IntHolder2', new_data_only=False)
-    correct_private_names('RI', 'IntHolder2', new_data_only=False)
-    correct_private_names('ME', 'IntHolder2', new_data_only=False)
-
-    correct_state_names('VT', 'FeeOwner', new_data_only=False)
-    correct_state_names('ME', 'FeeOwner', new_data_only=False)
-    correct_state_names('CT', 'FeeOwner', new_data_only=False)
-    correct_state_names('NH', 'FeeOwner', new_data_only=False)
-    correct_state_names('RI', 'FeeOwner', new_data_only=False)
-    correct_state_names('ME', 'FeeOwner', new_data_only=False)
-    correct_state_names('VT', 'IntHolder1', new_data_only=False)
-    correct_state_names('ME', 'IntHolder1', new_data_only=False)
-    correct_state_names('CT', 'IntHolder1', new_data_only=False)
-    correct_state_names('NH', 'IntHolder1', new_data_only=False)
-    correct_state_names('RI', 'IntHolder1', new_data_only=False)
-    correct_state_names('ME', 'IntHolder1', new_data_only=False)
-    correct_state_names('VT', 'IntHolder2', new_data_only=False)
-    correct_state_names('ME', 'IntHolder2', new_data_only=False)
-    correct_state_names('CT', 'IntHolder2', new_data_only=False)
-    correct_state_names('NH', 'IntHolder2', new_data_only=False)
-    correct_state_names('RI', 'IntHolder2', new_data_only=False)
-    correct_state_names('ME', 'IntHolder2', new_data_only=False)
-
-    correct_LOC_names('VT', 'FeeOwner', new_data_only=False)
-    correct_LOC_names('ME', 'FeeOwner', new_data_only=False)
-    correct_LOC_names('CT', 'FeeOwner', new_data_only=False)
-    correct_LOC_names('NH', 'FeeOwner', new_data_only=False)
-    correct_LOC_names('RI', 'FeeOwner', new_data_only=False)
-    correct_LOC_names('ME', 'FeeOwner', new_data_only=False)
-    correct_LOC_names('VT', 'IntHolder1', new_data_only=False)
-    correct_LOC_names('ME', 'IntHolder1', new_data_only=False)
-    correct_LOC_names('CT', 'IntHolder1', new_data_only=False)
-    correct_LOC_names('NH', 'IntHolder1', new_data_only=False)
-    correct_LOC_names('RI', 'IntHolder1', new_data_only=False)
-    correct_LOC_names('ME', 'IntHolder1', new_data_only=False)
-    correct_LOC_names('VT', 'IntHolder2', new_data_only=False)
-    correct_LOC_names('ME', 'IntHolder2', new_data_only=False)
-    correct_LOC_names('CT', 'IntHolder2', new_data_only=False)
-    correct_LOC_names('NH', 'IntHolder2', new_data_only=False)
-    correct_LOC_names('RI', 'IntHolder2', new_data_only=False)
-    correct_LOC_names('ME', 'IntHolder2', new_data_only=False)
+    correct_ct_2003_rows(ct_deep, ct_match_table, take_only_known=False, new_data_only=False)
 except Exception:
     print(traceback.format_exc())  # Print the error
     sys.exit()                     # Stop the script
