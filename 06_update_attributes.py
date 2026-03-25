@@ -61,7 +61,8 @@
 # any lasting changes to NEPOS.
 #
 # In the 2024 update, separate scripts were created for each state since there were sometimes things specific
-# to a state that didn't make sense to do for other states. You can checked those out in FOLDER where
+# to a state that didn't make sense to do for other states. You can checked those out in
+# Thompson_Lab_POS/Code/update_2025_nepos_v2-0_archive where
 # code is archived to see how it was done. However, I did try to make these functions flexible 
 # and useful for all states. I recommend keeping one "clean" copy with the multipurpose functions
 # and making any edits that should apply to all states in the main copy. Then you can make copies of that
@@ -192,6 +193,11 @@ def get_state_info(state):
         state_code_col = 'vt_match_code'
         state_pct_overlap_col = 'vt_pct_overlap'
         state_src = 'VT Protected Lands Database 6/2021'   # Update this for next update!
+    elif state == 'CT':
+        state_id_col = 'ct_deep_id'
+        state_code_col = 'ct_deep_match_code'
+        state_pct_overlap_col = 'ct_deep_pct_overlap'
+        state_src = "CT DEEP Property 1/2025"
     return([state_id_col, state_code_col, state_pct_overlap_col, state_src])
 
 ### Function for RI Local dataset - same functionality as above function ###
@@ -3316,9 +3322,15 @@ vt_match_table = pd.read_csv("D:/Lee/POS/Update_2023/Data/matching/nepos_vt_matc
 # So we are going to correct it and probably set most of these to 0 (unknown) unless there is
 # another valid year from a different source (unlikely in CT)
 pos = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction.gdb\\nepos_v2_0_sp_internal"
-ct_match_table = pd.read_csv("D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\match_tables\\nepos_ct_matches_20250306.csv")
+ct_match_table = pd.read_csv("D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\match_tables\\nepos_ct_matches_20250306.csv",
+                             dtype={'FinalID2': 'string', 'PolySource': 'string', 'PolySource_FeatID': 'string',
+                                    'ct_deep_id': 'string', 'tnc_id': 'string', 'nced_id': 'string', 'padus_id': 'string', "bh_id": "string"})
 ct_deep = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_data\\Update_2025_v2\\source_and_aux_data.gdb\\CT_DEEP_Property_albers_sp_2025_01"
 
+# Within the 'try' block is where you add the functions you actually want to run!
+# Recommend working on one attribute (or set of related attributes) at a time, and doing QAQC
+# on each attribute as you go, then making a copy before moving onto the next attribute
+# That way if something doesn't work properly, you don't have to start everything over, just that one attribute!
 try:
     correct_ct_2003_rows(ct_deep, ct_match_table, take_only_known=False, new_data_only=False)
 except Exception:
