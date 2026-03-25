@@ -11,15 +11,15 @@
 
 import arcpy
 
-arcpy.env.workspace = "D:/Lee/POS/Update_2023/Data/new_data2.gdb/"
+arcpy.env.workspace = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction\\ct_2003_correction.gdb"
 arcpy.env.overwriteOutput = True
 
-pos = "POS_v2_29_sp"
+pos = "nepos_v2_0_sp_internal"
 
 #arcpy.management.CalculateGeometryAttributes(pos, [["Area_Ac", "AREA"]], area_unit="ACRES_US")
 #arcpy.management.CalculateGeometryAttributes(pos, [["Area_Ha", "AREA"]], area_unit="HECTARES")
 
-out_file = f"D:/Lee/POS/Update_2023/Data/matching/{pos}.dbf"
+out_file = f"D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction\\tables\\{pos}.dbf"
 
 arcpy.management.CopyRows(pos, out_file)
 print("Done")
