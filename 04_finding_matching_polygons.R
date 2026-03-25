@@ -22,53 +22,68 @@
 
 # Directory where outputs from spatial_matching.py were sent
 # Output tables will also be saved here
-setwd("D:/Lee/POS/Update_2023/Data/matching/")
+setwd("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/Update_2025_v2/ct_2003_correction/tables/")
 
 # Script containing functions used to summarize output tables
-source("D:/Lee/POS/Update_2023/Code/04_find_matching_polygons_functions.R")
+source("D:/Thompson_Lab_POS/Code/update-nepos/04_find_matching_polygons_functions.R")
 
 #### DBF OF LATEST SINGLEPART NEPOS VERSION ####
 # Create this using copy_rows.py and save to working directory above
-nepos <- 'POS_v2_29_sp.dbf'
+nepos <- 'nepos_v2_0_sp_internal.dbf'
 
 #### MATCHING TABLES FOR MULTISTATE SOURCES #####
-# It is important to update the file names of the tabulate intersection
+# It is important to update the file names of of all tables before running@
+# And especially the tabulate intersection
 # output csvs (% overlap csv) to make sure
 # you are using the right version - e.g., if you were doing one state
 # with NEPOS_v10, but then the next state you have v11 or v12, you
 # need to update the CSV name to reflect this since the table names
 # contain the POS file name used in the tool.
 # The join DBFs all have the same name (they get overwritten each time)
-# so those don't need to be updated with each iteration unless that changes.
+# so those don't need to be updated with each iteration unless that changes
+# (and note that if you have different source file names then that will
+# be reflected in the DBF tables too and you will need to update the lines below).
+#
+# ALSO NOTE FOR MULTI-STATE SOURCES: Be sure to update the 'state' parameter
+# for TNC, PADUS, NCED, and any other multi-state sources!
 
-# TNC
+# TNC - last used 3/2026 ct 2003 correction
 dbf1.tnc <- 'POS_join_TNC_SA2022_albers_sp_pt_1to1.dbf'
 dbf2.tnc <- 'TNC_SA2022_albers_sp_join_POS_pt_1to1.dbf'
 dbf3.tnc <- 'POS_join_TNC_SA2022_albers_sp_pt_1toM.dbf'
 dbf4.tnc <- 'TNC_SA2022_albers_sp_join_POS_pt_1toM.dbf'
-pct.csv.tnc <- 'tab_intersect_POS_v2_29_sp_TNC_SA2022_albers_sp.csv'  # Make sure using correct file
+pct.csv.tnc <- 'tab_intersect_nepos_v2_0_sp_internal_TNC_SA2022_albers_sp.csv'  # Make sure using correct file
 tnc <- create_spatial_match_table(dbf1.tnc, dbf2.tnc, dbf3.tnc, dbf4.tnc, pct.csv.tnc, nepos,
-                                  source = 'tnc', state = 'VT', save_csv = T)
+                                  source = 'tnc', state = 'CT', save_csv = T)
 
-# NCED
-dbf1.nced <- 'POS_join_NCED_albers_sp_pt_1to1.dbf'
-dbf2.nced <- 'NCED_albers_sp_join_POS_pt_1to1.dbf'
-dbf3.nced <- 'POS_join_NCED_albers_sp_pt_1toM.dbf'
-dbf4.nced <- 'NCED_albers_sp_join_POS_pt_1toM.dbf'
-pct.csv.nced <- 'tab_intersect_POS_v2_29_sp_NCED_albers_sp.csv'  # Make sure using correct file
+# NCED - last used 3/2026 ct 2003 correction
+dbf1.nced <- 'POS_join_NCED_albers_sp_2024_07_pt_1to1.dbf'
+dbf2.nced <- 'NCED_albers_sp_2024_07_join_POS_pt_1to1.dbf'
+dbf3.nced <- 'POS_join_NCED_albers_sp_2024_07_pt_1toM.dbf'
+dbf4.nced <- 'NCED_albers_sp_2024_07_join_POS_pt_1toM.dbf'
+pct.csv.nced <- 'tab_intersect_nepos_v2_0_sp_internal_NCED_albers_sp_2024_07.csv'  # Make sure using correct file
 nced <- create_spatial_match_table_nced(dbf1.nced, dbf2.nced, dbf3.nced, dbf4.nced, pct.csv.nced, nepos,
-                                        source = 'nced', state = 'VT', save_csv = T)
+                                        source = 'nced', state = 'CT', save_csv = T)
 
-# PADUS
+# PADUS - last used 3/2026 ct 2003 correction
 dbf1.padus <- 'POS_join_PADUS4_0Fee_Easement_NE_sp_pt_1to1.dbf'
 dbf2.padus <- 'PADUS4_0Fee_Easement_NE_sp_join_POS_pt_1to1.dbf'
 dbf3.padus <- 'POS_join_PADUS4_0Fee_Easement_NE_sp_pt_1toM.dbf'
 dbf4.padus <- 'PADUS4_0Fee_Easement_NE_sp_join_POS_pt_1toM.dbf'
-pct.csv.padus <- 'tab_intersect_POS_v2_29_sp_PADUS4_0Fee_Easement_NE_sp.csv'  # Make sure using correct file
+pct.csv.padus <- 'tab_intersect_nepos_v2_0_sp_internal_PADUS4_0Fee_Easement_NE_sp.csv'  # Make sure using correct file
 padus <- create_spatial_match_table(dbf1.padus, dbf2.padus, dbf3.padus, dbf4.padus, pct.csv.padus, nepos,
-                                    source = 'padus', state = 'VT', save_csv = T)
+                                    source = 'padus', state = 'CT', save_csv = T)
 
 ###### MATCHING TABLES FOR STATE SOURCES
+# CT DEEP - for 3/2026 2003 ct correction work
+dbf1.ct <- 'POS_join_CT_DEEP_Property_albers_sp_2025_01_pt_1to1.dbf'
+dbf2.ct <- 'CT_DEEP_Property_albers_sp_2025_01_join_POS_pt_1to1.dbf'
+dbf3.ct <- 'POS_join_CT_DEEP_Property_albers_sp_2025_01_pt_1toM.dbf'
+dbf4.ct <- 'CT_DEEP_Property_albers_sp_2025_01_join_POS_pt_1toM.dbf'
+pct.csv.ct <- 'tab_intersect_nepos_v2_0_sp_internal_CT_DEEP_Property_albers_sp_2025_01.csv'  # Make sure using correct file
+ct <- create_spatial_match_table(dbf1.ct, dbf2.ct, dbf3.ct, dbf4.ct, pct.csv.ct, nepos,
+                                 source = 'ct_deep', state = 'CT', save_csv = T)
+
 # RI Local
 dbf1.ri.local <- 'POS_join_RI_Local_albers_sp_pt_1to1.dbf'
 dbf2.ri.local <- 'RI_Local_albers_sp_join_POS_pt_1to1.dbf'
