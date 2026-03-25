@@ -140,6 +140,10 @@ vt <- create_spatial_match_table(dbf1.vt, dbf2.vt, dbf3.vt, dbf4.vt, pct.csv.vt,
 
 
 #### COMBINING MATCH TABLES
+# In this section we write the CSVs generated above that we want to combine
+# and make them into one table using combine_match_tables()
+# THE ORDER OF INPUT TABLES DOES MATTER! See 04 functions script for more details
+
 ri.local <- 'nepos_ri_local_match_table_2025-05-09_full.csv'
 ri.state <- 'nepos_ri_state_match_table_2025-05-09_full.csv'
 tnc <- 'nepos_tnc_match_table_2025-05-09_full.csv'
@@ -167,6 +171,13 @@ combine_match_tables('VT', vt, tnc, nced, padus)
 
 me <- 'nepos_megis_match_table_2025-07-18_full.csv'
 combine_match_tables('ME', me, tnc, nced, padus)
+
+ct <- "nepos_ct_deep_match_table_2026-03-25_full.csv"
+padus <- "nepos_padus_match_table_2026-03-25_full.csv"
+tnc <- "nepos_tnc_match_table_2026-03-25_full.csv"
+nced <- "nepos_nced_match_table_2026-03-25_full.csv"
+combine_match_tables('CT', ct, tnc, nced, padus)
+
 
 ##### MATCH TABLES FOR "SPECIAL" SOURCES #####
 # WWF&C Wildlands
