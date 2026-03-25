@@ -1445,8 +1445,7 @@ combine_match_tables <- function(state_abb, state_table, tnc_table, nced_table, 
   # match_type_code and geom_checked fields
   # which tell us whether to use the spatially matched polygon or the polygon in PolySource
   nepos_with_matching_fields <- read.dbf(nepos, as.is = T)
-  nepos_with_matching_fields <- rename(nepos_with_matching_fields, PolySource_FeatID = PolySour_1,
-                                       geom_updated = geom_updat, geom_checked = geom_check)
+  nepos_with_matching_fields <- rename(nepos_with_matching_fields, PolySource_FeatID = PolySour_1)
   
   # Get unique ID of all POS polygons in ME
   all_nepos_state_ids <- nepos_with_matching_fields[nepos_with_matching_fields$State == state_abb, 'FinalID2']
@@ -1454,9 +1453,9 @@ combine_match_tables <- function(state_abb, state_table, tnc_table, nced_table, 
   # Create dataframe to store combined results
   combined_match_table <- data.frame('FinalID2' = all_nepos_state_ids)
   
-  # Join the PolySource, PolySource_FeatID, geom_checked, geom_updated fields
+  # Join the PolySource, PolySource_FeatID fields
   combined_match_table <- left_join(combined_match_table, 
-                                    nepos_with_matching_fields[, c('FinalID2', 'PolySource', 'PolySource_FeatID', 'geom_checked', 'geom_updated')],
+                                    nepos_with_matching_fields[, c('FinalID2', 'PolySource', 'PolySource_FeatID')],
                                     by = 'FinalID2')
   
   # Rename columns depending on state_abb and subset to the renamed columns
