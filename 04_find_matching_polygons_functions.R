@@ -20,10 +20,6 @@ library(foreign)
 library(dplyr)
 library(ggplot2)
 
-# Set working directory to where the outputs of 05_spatial_matching.py live
-# This is also where the output CSVs will be sent
-setwd('D:/Lee/POS/Update_2023/Data/matching/')
-
 # Define 'not in' operator -- useful for subsetting
 `%!in%` <- Negate(`%in%`)
 
