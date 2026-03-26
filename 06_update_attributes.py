@@ -82,6 +82,7 @@ import traceback
 import arcpy
 import pandas as pd
 import sys
+from datetime import date
 
 arcpy.env.workspace = 'D:/Lee/POS/Update_2023/Data/new_data2.gdb/'
 
@@ -145,6 +146,13 @@ wildlands_src = "WWF&C Wildlands 4/2022"
 min_match_code = 1       # min_match_code should never be less than 1
 max_match_code = 4       # max_match_code should never be more than 6 in my experience
 min_pct_overlap = 90.0   # recommend keeping this at 90 or higher, but 85 would possibly be okay too
+
+## TODAYS DATE ##
+# This is NOT CURRENTLY (as of 3/2026) incorporated into any functions except the one made to correct 2003 CT date issue
+# This would be really great to add to add functions! All you have to do is add Edit_Date to the UpdateCursor fields
+# and then a line to change that field to this variable
+# Date is in YYYYMMDD format
+todays_date = date.today().strftime("%Y%m%d")
 
 #### HELPER FUNCTIONS ####
 ### Function to print elapsed time running script ###
@@ -2743,14 +2751,12 @@ def correct_ct_2003_rows(state_fc, match_table, take_only_known=True, new_data_o
     state_src = state_items[3]
 
     fields = ['FinalID2', 'PolySource', 'PolySource_FeatID', 
-              'YearProt', 'Source_YearProt', 'Source_YearProt_FeatID']
+              'YearProt', 'Source_YearProt', 'Source_YearProt_FeatID', 
+              'Edit_Date', 'YearProt_Final', 'YearProtComments', 'YearNotes_Internal']
     c = 0
     with arcpy.da.UpdateCursor(pos, fields, query) as cur:
         for row in cur:
             try:
-                # Get current year
-                old_yearprot = row[3]
-
                 # State match codes
                 state_match_ss = match_table.loc[match_table['FinalID2'] == row[0], [state_id_col, state_code_col, state_pct_overlap_col]].drop_duplicates()
                 state_matched_src_id = state_match_ss.iloc[0, 0]
@@ -2788,38 +2794,50 @@ def correct_ct_2003_rows(state_fc, match_table, take_only_known=True, new_data_o
                     padus_match_code = -1
                 
                 # For each source, we compare the match code and % overlap and then update the row as long
-                # as the year is not from a manual source. The conditionals do not check for the value
-                # of the source year -- that should be handled in take_only_known and unknown_only arguments!
-                if (min_match_code <= state_match_code <= max_match_code or (state_match_code == 10 and state_pct_overlap >= min_pct_overlap)):
-                    if (row[7] == 1 or 'Harvard Forest' in row[4] or 'SRM' in row[4]) and state_year != row[3]:
-                            row[8] = f"Year conflict b/w NEPOS and {state_src}"
-                    elif 'Harvard Forest' in row[4] and state_year == row[3]:
-                            row[8] = f"Harvard Forest year matches {state_src}"
+                # as the year is not from a manual source. Note that in contrast to the main update_yearProt function,
+                # this one DOES check for a valid value in the conditional because we are specifically trying to replace
+                # 2003 years - we don't want to update it with another 2003 value!
+                if (min_match_code <= state_match_code <= max_match_code or (state_match_code == 10 and state_pct_overlap >= min_pct_overlap)) and state_year != row[3]:
+                    if (row[7] == 1 or 'Harvard Forest' in row[4] or 'SRM' in row[4]):
+                        print(f"Check {row[0]}")
                     else:
                         row[3] = state_year
                         row[4] = state_src
                         row[5] = state_orig_id
+                        row[6] = todays_date
                         c = c + 1
-                elif (min_match_code <= nced_match_code <= max_match_code or (nced_match_code == 10 and nced_pct_overlap >= min_pct_overlap)):
-                    if (row[7] == 1 or 'Harvard Forest' in row[4] or 'SRM' in row[4]) and nced_year != row[3]:
-                            row[8] = f"Year conflict b/w NEPOS and {nced_src}"
-                    elif 'Harvard Forest' in row[4] and nced_year == row[3]:
-                            row[8] = f"Harvard Forest year matches {nced_src}"
+                elif (min_match_code <= nced_match_code <= max_match_code or (nced_match_code == 10 and nced_pct_overlap >= min_pct_overlap)) and nced_year != row[3]:
+                    if (row[7] == 1 or 'Harvard Forest' in row[4] or 'SRM' in row[4]):
+                            print(f"Check {row[0]}")
                     else:
                         row[3] = nced_year
                         row[4] = nced_src
                         row[5] = nced_orig_id
+                        row[6] = todays_date
                         c = c + 1
-                elif (min_match_code <= padus_match_code <= max_match_code or (padus_match_code == 10 and padus_pct_overlap >= min_pct_overlap)):
-                    if (row[7] == 1 or 'Harvard Forest' in row[4] or 'SRM' in row[4]) and padus_year != row[3]:
-                            row[8] = f"Year conflict b/w NEPOS and {padus_src}"
-                    elif 'Harvard Forest' in row[4] and padus_year == row[3]:
-                            row[8] = f"Harvard Forest year matches {padus_src}"
+                elif (min_match_code <= padus_match_code <= max_match_code or (padus_match_code == 10 and padus_pct_overlap >= min_pct_overlap)) and padus_year != row[3]:
+                    if (row[7] == 1 or 'Harvard Forest' in row[4] or 'SRM' in row[4]):
+                            print(f"Check {row[0]}")
                     else:
                         row[3] = padus_year
                         row[4] = padus_src
                         row[5] = padus_orig_id
+                        row[6] = todays_date
                         c = c + 1
+                else:
+                    row[3] = 0
+                    row[4] = 'Harvard Forest / data quality issue'
+                    row[6] = todays_date
+                    c = c + 1
+                    if row[8] is None:
+                        row[8] = "Protected before 2003 (TNC 2018 DATE_PREC = 'pre'), no more specific information available so have to set to unknown"
+                    elif row[8] is not None:
+                        row[8] = f"{row[8]}; Protected before 2003 (TNC 2018 DATE_PREC = 'pre'), no more specific information available so have to set to unknown"
+                    
+                    if row[9] is None:
+                        row[9] = "Data quality issue in TNC 2003 CT data - in 2018 data all 2003 CT rows have DATE_PREC 'pre' meaning protected BEFORE 2003. This carried over into other sources and 2022 TNC. Check for improved data quality in future releases."
+                    elif row[9] is not None:
+                        row[9] = f"{row[9]}; Data quality issue in TNC 2003 CT data - in 2018 data all 2003 CT rows have DATE_PREC 'pre' meaning protected BEFORE 2003. This carried over into other sources and 2022 TNC. Check for improved data quality in future releases."
                 cur.updateRow(row)  # Update YearProt
             except Exception:
                 print(traceback.format_exc())
@@ -3321,10 +3339,10 @@ vt_match_table = pd.read_csv("D:/Lee/POS/Update_2023/Data/matching/nepos_vt_matc
 # these got picked up by PADUS and there's now very little confidence in any CT data from 2003.
 # So we are going to correct it and probably set most of these to 0 (unknown) unless there is
 # another valid year from a different source (unlikely in CT)
-pos = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction.gdb\\nepos_v2_0_sp_internal"
-ct_match_table = pd.read_csv("D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\match_tables\\nepos_ct_matches_20250306.csv",
+pos = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction\\ct_2003_correction.gdb\\nepos_v2_0_sp_internal"
+ct_match_table = pd.read_csv("D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction\\tables\\nepos_ct_matches_2026-03-25.csv",
                              dtype={'FinalID2': 'string', 'PolySource': 'string', 'PolySource_FeatID': 'string',
-                                    'ct_deep_id': 'string', 'tnc_id': 'string', 'nced_id': 'string', 'padus_id': 'string', "bh_id": "string"})
+                                    'ct_deep_id': 'string', 'tnc_id': 'string', 'nced_id': 'string', 'padus_id': 'string'})
 ct_deep = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_data\\Update_2025_v2\\source_and_aux_data.gdb\\CT_DEEP_Property_albers_sp_2025_01"
 
 # Within the 'try' block is where you add the functions you actually want to run!
