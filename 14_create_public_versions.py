@@ -27,11 +27,12 @@ import os
 
 # Set workspace to wherever the development (internal) POS singlepart and multipart versions live
 # This is probably the same workspace as the previous scripts
-arcpy.env.workspace = "D:\\Lee\\POS\\Update_2023\\Data\\new_data2.gdb"
+arcpy.env.workspace = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction\\ct_2003_correction.gdb"
 arcpy.env.overwriteOutput = True
 
 # Output GDB for public and clean internal versions - needs to be double backslash
 # to be compatible with os.path.join
+# This script will overwrite any files sent to the same GDB with the same name! So be careful!
 public_gdb = "D:\\Thompson_Lab_POS\\Data\\POS_public.gdb"
 internal_gdb = "D:\\Thompson_Lab_POS\\Data\\POS_internal.gdb"
 
@@ -169,7 +170,7 @@ def create_public_mp(nepos, out_filename):
 
 
 ###### CALL FUNCTIONS ######
-nepos_sp = "POS_v2_30_sp"  # Singlepart NEPOS resulting from all previous scripts
+nepos_sp = "nepos_v2_0_sp_internal"  # Singlepart NEPOS resulting from all previous scripts
 clean_internal_sp(nepos_sp, "nepos_v2_0_sp_internal")
 create_public_sp(nepos_sp, "nepos_v2_0_sp")
 
