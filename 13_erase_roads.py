@@ -30,8 +30,10 @@ import traceback
 
 ### IMPORTANT PATH VARIABLES ###
 # GDB where multipart NEPOS lives (output of create_multipart_polygons.py)
-nepos_gdb = "D:\\Lee\\POS\\Update_2023\\Data\\new_data2.gdb\\"
+nepos_gdb = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction\\ct_2003_correction.gdb\\"
 # Folder where the roads data live
+# This is necessary if starting with fresh raods data
+# If you are reusing already prepared roads data you can skip this
 roads_fol = "D:\\Lee\\POS\\Update_2023\\Data\\Roads\\"
 
 # GDB where NEPOS lives
@@ -80,6 +82,8 @@ def subset_nhd_area(gdb):
     print(f"Exported subset to {areas_fc}...")
     return(areas_subset)
 
+# Not run - decided not to erase water as it creates many more issues
+# Removing water can be handled other ways using LC datasets for specific analyses
 def prep_water():
     # Set workspace to the NHD folder which contains GDBs of 
     # each state's NHD data
@@ -168,10 +172,11 @@ def prep_roads():
 
 try:
     # Prep water bodies and roads from raw data
-    #nhd = prep_water()
+    # NOTE: You can also assign 'roads' to a path of prepared roads data
+    # If you already have prepped the roads and don't want to recreate from raw data again
     roads = prep_roads()
 
-    # Merge together - dp not run!
+    # Merge together - do not run! Decided not to erase water!
     #roads_and_water = "roads_water_combined"
     #arcpy.management.Merge([nhd, roads], roads_and_water)
 
