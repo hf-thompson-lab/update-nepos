@@ -13,8 +13,7 @@ import sys
 import traceback
 
 # GDB where NEPOS lives
-arcpy.env.workspace = "D:\\Lee\\POS\\Update_2023\\Data\\new_data2.gdb"
-arcpy.env.overwriteOutput = True
+arcpy.env.workspace = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction\\ct_2003_correction.gdb"
 arcpy.env.overwriteOutput = True
 
 # Function to print elapsed time running script
@@ -241,7 +240,7 @@ def join_mp_finalid(join_fc, sp_poly):
 
 try:
     # POS single part internal
-    pos = "POS_v2_30_sp"
+    pos = "nepos_v2_0_sp_internal"
 
     # Separate the parts of NEPOS that will be used
     # for multipart and those that won't
