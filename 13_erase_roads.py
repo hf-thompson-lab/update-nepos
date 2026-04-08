@@ -30,7 +30,7 @@ import traceback
 
 ### IMPORTANT PATH VARIABLES ###
 # GDB where multipart NEPOS lives (output of create_multipart_polygons.py)
-nepos_gdb = "D:\\Thompson_Lab_POS\\Data\\POS_internal.gdb\\"
+nepos_gdb = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\update_type\\nepos.gdb\\"
 # Folder where the roads data live
 # This is necessary if starting with fresh raods data
 # If you are reusing already prepared roads data you can skip this
