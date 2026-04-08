@@ -25,9 +25,9 @@
 import arcpy
 
 # Workspace should be wherever development POS lives
-arcpy.env.workspace = "D:/Lee/POS/Update_2023/Data/new_data2.gdb/"
+arcpy.env.workspace = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\update_type\\nepos.gdb\\"
 
-fc = "POS_v2_29_sp"
+fc = "nepos_v2_0_sp_internal_20260408"
 
 # Function to update PA type
 # This function does general classifying then does a second round based on keywords and other criteria
@@ -46,7 +46,7 @@ def update_type(state = None, sql = None):
 
     # Use just the fields we need for calculating type
     fields = ["type", "YearProt", "Area_Ha", "GapStatus", "FeeOwnCat",
-            "AreaName", "FeeOwner", "WildYear", "ProtTypeComments", "IntHolder1"]
+            "AreaName", "FeeOwner", "WildYear", "ProtTypeComments", "IntHolder1", "ProtType"]
 
     # Create lists of GAP statuses used for reserve / multiple use
     gap_res = [1, 2]
@@ -129,7 +129,7 @@ def update_type(state = None, sql = None):
                 continue
             # Based on AreaName or ProtTypeComments and private ownership and GAP
             if ((' APR' in row[5] or 'farmland' in row[5].lower() or 'frpp' in row[5].lower() or 'farm services agency' in row[5].lower()
-                 or 'ACEP-ALE' in row[5].lower()) and row[4] == 'Private' and row[3] not in gap_res):
+                 or 'acep-ale' in row[5].lower()) and row[4] == 'Private' and row[3] not in gap_res):
                 row[0] = "Farm"
                 f = f + 1
                 cur.updateRow(row)
@@ -171,38 +171,73 @@ def update_type(state = None, sql = None):
                 cur.updateRow(row)
                 continue
 
-            ### Playgrounds
+            ### Playgrounds - important that this come before rec fields since a lot of playgrounds are also at schools
+            # and could also match the next conditional block with school keywords
             if 'playground' in row[5].lower() or 'play ground' in row[5].lower() or 'tot lot' in row[5].lower():
-                row[0] = 'Playground'
+                row[0] = 'Rec - Playground'
                 p = p + 1
-                cur.updateRow(row)
-                continue
-
-            ### Playing fields
-            if 'recreation field' in row[5].lower() or 'ball field' in row[5].lower() or 'little league field' in row[5].lower() or 'soccer field' in row[5].lower():
-                row[0] = 'Rec Field'
-                r = r + 1
                 cur.updateRow(row)
                 continue
 
             ### Golf course
             if 'golf club' in row[5].lower() or 'golf course' in row[5].lower():
-                row[0] = 'Golf course'
-                gc = gc + 1
+                row[0] = 'Rec - Golf'
+                r = r + 1
                 cur.updateRow(row)
                 continue
 
             ### Country club
             if 'country club' in row[5].lower() or row[5] == 'Ten Mile River (Agawam Hunt)' or row[5] == 'Ten Mile River (Agawam Hunt 2)':
-                row[0] = 'Country club'
-                cc = cc + 1
+                row[0] = 'Rec - Country club'
+                r = r + 1
+                cur.updateRow(row)
+                continue
+
+            ### Boating facilities
+            if ('boat club' in row[5].lower() or 'boat launch' in row[5].lower() or 'boat ramp' in row[5].lower() or 'boating access' in row[5].lower() or 
+                'boat access' in row[5].lower() or 'boathouse' in row[5].lower()):
+                row[0] = 'Rec - Boat'
+                r = r + 1
+                cur.updateRow(row)
+                continue
+
+            ### Pools
+            # Saw some pools with CR areas so adding additional check of ProtType
+            if (' pool' in row[5].lower() and row[10] == 'Fee'):
+                row[0] = 'Rec - Pool'
+                r = r + 1
+                cur.updateRow(row)
+                continue
+
+            ### Other - general (unclassifiable in above categories) or too specific to warrant its own category
+            if ('sports complex' in row[5].lower() or 'skate park' in row[5].lower() or 'athletic complex' in row[5].lower() or 
+                'dog park' in row[5].lower() or 'basketball' in row[5].lower()):
+                row[0] = 'Rec - Other'
+                r = r + 1
+                cur.updateRow(row)
+                continue
+
+            ### Playing fields
+            # Some school properties have CRs - we want to avoid categorizing these as recreational areas
+            # Because if they have a CR that suggests some actual conserved land on the property such as a school woods area
+            # To do this, we can just make sure the ProtType is Fee and check for keywords (as of 4/2026 these include 'forest' and 'trail')
+            # We are assuming that any school lands not called a playground are a rec fields
+            # Because this block has a lot of general keywords (mainly schools) running this last in case there is a more
+            # specific match in one of the previous categories
+            if ('recreation field' in row[5].lower() or 'ball field' in row[5].lower() or 'little league field' in row[5].lower() or 'soccer field' in row[5].lower() or
+                'athletic field' in row[5].lower() or 'school field' in row[5].lower() or 'recreational field' in row[5].lower() or 'baseball' in row[5].lower() or
+                ('middle school' in row[5].lower() and row[10] == 'Fee' and 'forest' not in row[5].lower() and 'trail' not in row[5].lower()) or 
+                ('elementary school' in row[5].lower() and row[10] == 'Fee' and 'forest' not in row[5].lower() and 'trail' not in row[5].lower()) or 
+                ('high school' in row[5].lower() and row[10] == 'Fee' and 'forest' not in row[5].lower() and 'trail' not in row[5].lower()) or
+                ('elem school' in row[5].lower() and row[10] == 'Fee' and 'forest' not in row[5].lower() and 'trail' not in row[5].lower())):
+                row[0] = 'Rec - Field'
+                r = r + 1
                 cur.updateRow(row)
                 continue
 
             ### Military (fee)??
-
                 
-        print(f"Updated type for {w} wildlands, {f} farmlands, {cf} community forests, {cem} cemeteries, {p} playgrounds, {r} playing fields, {gc} golf courses, and {cc} country clubs")
+        print(f"Updated type for {w} wildlands, {f} farmlands, {cf} community forests, {cem} cemeteries, {p} playgrounds, {r} other recreation facilities")
 
 # Corrections by unique ID
 # There is a list for each "type" where you can put FinalID2 of polygons that should be changed to that type
