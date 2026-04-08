@@ -13,7 +13,7 @@ import sys
 import traceback
 
 # GDB where NEPOS lives
-arcpy.env.workspace = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction\\ct_2003_correction.gdb"
+arcpy.env.workspace = "D:\\Thompson_Lab_POS\\Data\\POS_internal.gdb\\"
 arcpy.env.overwriteOutput = True
 
 # Function to print elapsed time running script
