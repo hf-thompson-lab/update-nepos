@@ -13,7 +13,7 @@ import sys
 import traceback
 
 # GDB where NEPOS lives
-arcpy.env.workspace = "D:\\Thompson_Lab_POS\\Data\\POS_internal.gdb\\"
+arcpy.env.workspace = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\update_type\\nepos.gdb\\"
 arcpy.env.overwriteOutput = True
 
 # Function to print elapsed time running script
@@ -238,9 +238,26 @@ def join_mp_finalid(join_fc, sp_poly):
     
     print("Joined and copied multipart FinalID into singlpart FinalID field...")
 
+# Function to compare the total acres in the singlepart file and the new multipart file
+# This is useful to make sure the areas match without having to open ArcGIS
+def compare_acres(sp, mp):
+    sp_ac = 0
+    with arcpy.da.SearchCursor(sp, "Area_Ac") as cur:
+        for row in cur:
+            sp_ac = sp_ac + row[0]
+
+    mp_ac = 0
+    with arcpy.da.SearchCursor(mp, "Area_Ac") as cur:
+        for row in cur:
+            mp_ac = mp_ac + row[0]
+
+    # Print results to compare
+    print(f"Singlepart acres: {sp_ac}")
+    print(f"Multipart acres: {mp_ac}")
+
 try:
     # POS single part internal
-    pos = "nepos_v2_0_sp_internal"
+    pos = "nepos_v2_0_sp_internal_20260408"
 
     # Separate the parts of NEPOS that will be used
     # for multipart and those that won't
@@ -275,7 +292,10 @@ try:
 
     join_mp_finalid(pos_pt_with_mp_id, pos)
 
-    print("Done")
+    print("Done creating multipart features...")
+
+    # Calculate and print the acres in the file we started with and the one we made
+    compare_acres(pos, merged_nepos)
 except Exception:
     print(traceback.format_exc())
     sys.exit()
