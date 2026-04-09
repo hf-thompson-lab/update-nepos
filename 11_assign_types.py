@@ -180,14 +180,16 @@ def update_type(state = None, sql = None):
                 continue
 
             ### Golf course
-            if 'golf club' in row[5].lower() or 'golf course' in row[5].lower():
+            if ('golf club' in row[5].lower() or 'golf course' in row[5].lower()) and 'ease' not in row[10].lower():
                 row[0] = 'Rec - Golf'
                 r = r + 1
                 cur.updateRow(row)
                 continue
 
             ### Country club
-            if 'country club' in row[5].lower() or row[5] == 'Ten Mile River (Agawam Hunt)' or row[5] == 'Ten Mile River (Agawam Hunt 2)':
+            # Similar with some other areas, some of these have real CRs in place so we need to check for that so those
+            # areas do not get flagged as country club if that is not what they are actually used for
+            if 'country club' in row[5].lower() and 'ease' not in row[10].lower():
                 row[0] = 'Rec - Country club'
                 r = r + 1
                 cur.updateRow(row)
@@ -203,7 +205,9 @@ def update_type(state = None, sql = None):
 
             ### Pools
             # Saw some pools with CR areas so adding additional check of ProtType
-            if (' pool' in row[5].lower() and row[10] == 'Fee'):
+            # There are also some areas with name 'pool preserve' or 'vernal pool' so we will use GAP status to exclude those
+            # areas that are real conservation areas
+            if (' pool' in row[5].lower() and row[10] == 'Fee' and row[3] != 1 and row[3] != 2):
                 row[0] = 'Rec - Pool'
                 r = r + 1
                 cur.updateRow(row)
