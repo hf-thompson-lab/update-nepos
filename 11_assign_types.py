@@ -217,6 +217,16 @@ def update_type(state = None, sql = None):
                 cur.updateRow(row)
                 continue
 
+            ### Rod and gun clubs and sportsmans associations
+            # For these we only want to set GAP 4 or 0 to Rec - Sportsman because some of these areas have real conservation easements
+            # or have since been purchased by conservation entities but retain the keyword as part of the area name
+            if (('sportsman' in row[5].lower() or 'rod and gun' in row[5].lower() or 'rod & gun' in row[5].lower()) and
+                (row[3] == 4 or row[3] == 0)):
+                row[0] = 'Rec - Sportsman'
+                r = r + 1
+                cur.updateRow(row)
+                continue
+
             ### Playing fields
             # Some school properties have CRs - we want to avoid categorizing these as recreational areas
             # Because if they have a CR that suggests some actual conserved land on the property such as a school woods area
