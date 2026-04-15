@@ -63,7 +63,7 @@ def project_data(data):
     arcpy.management.Project(data, result, crs)
     print(f"Projected {data} to NEPOS CRS...")
 
-    return(data)   # Return the file name for further preprocessing
+    return(result)   # Return the file name for further preprocessing
 
 # Prep MassGIS data
 def prep_massgis(data):
