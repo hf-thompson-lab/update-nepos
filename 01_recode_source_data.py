@@ -34,7 +34,7 @@ import sys
 # Geodatabase containing all source datasets
 # Projected and preprocessed multipart source layers will also be sent here
 # UPDATE THIS PATH FOR NEXT UPDATE
-arcpy.env.workspace = 'D:/Lee/POS/Update_2023/Data/new_data_sources.gdb/'
+arcpy.env.workspace = 'D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/sources.gdb'
 arcpy.env.overwriteOutput = True
 
 # Function to print elapsed time running script
@@ -1525,7 +1525,7 @@ def prep_nced(data):
     
     def add_prot_type_comment():
         c = 0
-        with arcpy.da.UpdateCursor(data, ["purpose", "ProtTypComments"]) as cur:
+        with arcpy.da.UpdateCursor(data, ["purpose", "ProtTypeComments"]) as cur:
             for row in cur:
                 if row[0] == 'FARM':
                     row[1] = 'Farm (NCED)'
@@ -4432,10 +4432,10 @@ tnc = ""  # Clipped or subset to NE
 
 
 ###### Call NCED function #####
-nced = ""   # NCED polygons clipped to NE state boundaries - 2024 version
-#nced_proj = project_data(nced)
-#prep_nced(nced_proj)
-#make_single_part(nced_proj)
+nced = "NCED_NE"   # NCED polygons clipped to NE state boundaries - 2024 version
+nced_proj = project_data(nced)
+prep_nced(nced_proj)
+make_single_part(nced_proj, 'D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/sources.gdb')
 
 
 ###### Call PADUS function #####
