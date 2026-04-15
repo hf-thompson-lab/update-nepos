@@ -84,7 +84,7 @@ import pandas as pd
 import sys
 from datetime import date
 
-arcpy.env.workspace = 'D:/Lee/POS/Update_2023/Data/new_data2.gdb/'
+arcpy.env.workspace = 'D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/data.gdb/'
 
 #### SET GLOBAL VARIABLES ####
 # These are variables that are called in multiple functions, including data layers and
@@ -1933,8 +1933,8 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
             state_matched_src_id = state_match_ss.iloc[0, 0]
             state_match_code = state_match_ss.iloc[0, 1]
             state_pct_overlap = state_match_ss.iloc[0, 2]
-            state_orig_id = get_src_orig_id(state, state_matched_src_id)
             try:
+                state_orig_id = get_src_orig_id(state, state_matched_src_id)
                 state_prot_type = get_source_attribute(state_prot_types, state_orig_id)
                 if state in states_with_prot_type_comments:
                     state_prot_type_comment = get_source_attribute(state_prot_type_comments, state_orig_id)
@@ -1971,13 +1971,14 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
             # Since only state (and local for RI) sources have ProtTypeComments info, we can check for that here if
             # comments_only == True, to save time checking matches with other sources
             if comments_only == True:
-                if ((min_match_code <= state_match_code <= max_match_code or (state_match_code == 10 and state_pct_overlap >= min_pct_overlap)) 
-                and state_prot_type_comment is not None):
-                    if row[6] is not None and overwrite_comments == False:
-                        row[6] = row[6] + ' -- ' + state_prot_type_comment
-                    else:
-                        row[6] = state_prot_type_comment
-                    cur.updateRow(row)
+                if state in states_with_prot_type_comments:
+                    if ((min_match_code <= state_match_code <= max_match_code or (state_match_code == 10 and state_pct_overlap >= min_pct_overlap)) 
+                    and state_prot_type_comment is not None):
+                        if row[6] is not None and overwrite_comments == False:
+                            row[6] = row[6] + ' -- ' + state_prot_type_comment
+                        else:
+                            row[6] = state_prot_type_comment
+                        cur.updateRow(row)
                 if ((min_match_code <= nced_match_code <= max_match_code or (nced_match_code == 10 and nced_pct_overlap >= min_pct_overlap)) 
                 and nced_prot_type_comment is not None):
                     if row[6] is not None and overwrite_comments == False:
@@ -1985,13 +1986,14 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
                     else:
                         row[6] = nced_prot_type_comment
                     cur.updateRow(row)
-                if ((min_match_code <= local_match_code <= max_match_code or (local_match_code == 10 and local_pct_overlap >= min_pct_overlap)) 
-                and local_prot_type_comment is not None):
-                    if row[6] is not None and overwrite_comments == False:
-                        row[6] = row[6] + ' -- ' + local_prot_type_comment
-                    else:
-                        row[6] = local_prot_type_comment
-                    cur.updateRow(row)
+                if local_fc is not None:
+                    if ((min_match_code <= local_match_code <= max_match_code or (local_match_code == 10 and local_pct_overlap >= min_pct_overlap)) 
+                    and local_prot_type_comment is not None):
+                        if row[6] is not None and overwrite_comments == False:
+                            row[6] = row[6] + ' -- ' + local_prot_type_comment
+                        else:
+                            row[6] = local_prot_type_comment
+                        cur.updateRow(row)
                 
                 # Reduce redundancy in ProtTypeComments (not perfectly but will handle situations
                 # where new comments are the same as old comments)
