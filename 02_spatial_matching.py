@@ -30,7 +30,7 @@ import os
 # Parent folder containing the relevant folders/GDBs to read/write in
 # Some outputs of this script will go to a GDB and others to a folder,
 # so make sure the workspace is a path from which you can access both
-arcpy.env.workspace = "D:/Thompson_Lab_POS/Data/Old_GDBs_Data/Update_2025_v2/ct_2003_correction"
+arcpy.env.workspace = "D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id"
 arcpy.env.overwriteOutput = True   # Because I be messing up FREQUENTLY
 
 #### GLOBAL VARIABLES ####
@@ -44,7 +44,7 @@ arcpy.env.overwriteOutput = True   # Because I be messing up FREQUENTLY
 # to put the tool outputs in the correct places.
 # UPDATE AS NEEDED FOR FUTURE UPDATES!
 output_folder = "tables"
-output_gdb = "ct_2003_correction.gdb"
+output_gdb = "data.gdb"
 
 # Function that uses global var start_time to calculate elapsed time
 # This function is run regardless of whether a previous part of the code throws an error or not
@@ -143,33 +143,33 @@ try:
     # Singlepart preprocessed data
     pos_sp = f"{output_gdb}/nepos_v2_0_sp_internal"
     #nced_sp = f"{output_gdb}/NCED_albers_sp" 
-    nced_sp = f"{output_gdb}/NCED_albers_sp_2024_07"  # From archived GDB used 3/2026
-    tnc_sp = f"{output_gdb}/TNC_SA2022_albers_sp"
-    massgis_sp = f"{output_gdb}/MassGIS_OpenSpace_albers_sp"
-    maine_sp = f"{output_gdb}/Maine_Conserved_Lands_albers_sp"
-    ri_local_sp = f"{output_gdb}/RI_Local_albers_sp"
-    ri_state_sp = f"{output_gdb}/RI_State_albers_sp"
-    nh_sp = f"{output_gdb}/NH_Conservation_Public_Lands_albers_sp"
-    vt_sp = f"{output_gdb}/Cadastral_PROTECTEDLND_poly_albers_sp"
-    padus_sp = f'{output_gdb}/PADUS4_0Fee_Easement_NE_sp'
+    nced_sp = f"{output_gdb}/NCED_NE_albers_sp"  # Created 4/2026 w/ updated code to add Farm (NCED) to ProtTypeComments
+    #tnc_sp = f"{output_gdb}/TNC_SA2022_albers_sp"
+    #massgis_sp = f"{output_gdb}/MassGIS_OpenSpace_albers_sp"
+    #maine_sp = f"{output_gdb}/Maine_Conserved_Lands_albers_sp"
+    #ri_local_sp = f"{output_gdb}/RI_Local_albers_sp"
+    #ri_state_sp = f"{output_gdb}/RI_State_albers_sp"
+    #nh_sp = f"{output_gdb}/NH_Conservation_Public_Lands_albers_sp"
+    #vt_sp = f"{output_gdb}/Cadastral_PROTECTEDLND_poly_albers_sp"
+    #padus_sp = f'{output_gdb}/PADUS4_0Fee_Easement_NE_sp'
     #ct_sp = f'{output_gdb}/CT_DEEP_albers_sp'
-    ct_sp = f'{output_gdb}/CT_DEEP_Property_albers_sp_2025_01'  # From archived GDB used 3/2026
-    bh_sp = f'{output_gdb}/POS_from_Brian_Hall_albers_sp'
-    wildlands_sp = f"{output_gdb}/wildlands_albers_sp"
-    srm_sp = f"{output_gdb}/SRM_Cons_120114_sp"
-    deleted = f"{output_gdb}/deleted_polygons"
+    #ct_sp = f'{output_gdb}/CT_DEEP_Property_albers_sp_2025_01'  # From archived GDB used 3/2026
+    #bh_sp = f'{output_gdb}/POS_from_Brian_Hall_albers_sp'
+    #wildlands_sp = f"{output_gdb}/wildlands_albers_sp"
+    #srm_sp = f"{output_gdb}/SRM_Cons_120114_sp"
+    #deleted = f"{output_gdb}/deleted_polygons"
 
     # Tabulate intersection (% overlap) between polygon features
     calc_pct_overlap(pos_sp, nced_sp)
-    calc_pct_overlap(pos_sp, tnc_sp)
+    #calc_pct_overlap(pos_sp, tnc_sp)
     #calc_pct_overlap(pos_sp, massgis_sp)
     #calc_pct_overlap(pos_sp, maine_sp)
     #calc_pct_overlap(pos_sp, ri_local_sp)
     #calc_pct_overlap(pos_sp, ri_state_sp)
     #calc_pct_overlap(pos_sp, nh_sp)
     #calc_pct_overlap(pos_sp, vt_sp)
-    calc_pct_overlap(pos_sp, padus_sp)
-    calc_pct_overlap(pos_sp, ct_sp)
+    #calc_pct_overlap(pos_sp, padus_sp)
+    #calc_pct_overlap(pos_sp, ct_sp)
     #calc_pct_overlap(pos_sp, bh_sp)
     #calc_pct_overlap(pos_sp, wildlands_sp)
     #calc_pct_overlap(pos_sp, srm_sp)
@@ -180,7 +180,7 @@ try:
     #pos_sp_pt = "new_data2.gdb/POS_v2_25_sp_pt"
     pos_sp_pt = make_points(pos_sp)
     nced_sp_pt = make_points(nced_sp)
-    tnc_sp_pt = make_points(tnc_sp)
+    #tnc_sp_pt = make_points(tnc_sp)
     #massgis_sp_pt = f"{output_gdb}/MassGIS_OpenSpace_albers_sp_pt"
     #massgis_sp_pt = make_points(massgis_sp)
     #maine_sp_pt = f"{output_gdb}/Maine_Conserved_Lands_albers_sp_pt"
@@ -190,8 +190,8 @@ try:
     #nh_sp_pt = f"{output_gdb}/NH_Conservation_Public_Lands_albers_sp_pt"
     #nh_sp_pt = make_points(nh_sp)
     #vt_sp_pt = f"{output_gdb}/Cadastral_PROTECTEDLND_poly_albers_sp_pt"
-    padus_sp_pt = make_points(padus_sp)
-    ct_sp_pt = make_points(ct_sp)
+    #padus_sp_pt = make_points(padus_sp)
+    #ct_sp_pt = make_points(ct_sp)
     #bh_sp_pt = f"{output_gdb}/POS_from_Brian_Hall_albers_sp_pt"
     #wildlands_sp_pt = f"{output_gdb}/wildlands_albers_sp_pt"
     #srm_sp_pt = make_points(srm_sp)
@@ -199,15 +199,15 @@ try:
     # Conduct spatial joins - joins with the relevant state data, NCED, and TNC are run both iterations
     # to account for the updated geometries in NEPOS
     conduct_joins(pos_sp, pos_sp_pt, nced_sp, nced_sp_pt)
-    conduct_joins(pos_sp, pos_sp_pt, tnc_sp, tnc_sp_pt)
+    #conduct_joins(pos_sp, pos_sp_pt, tnc_sp, tnc_sp_pt)
     #conduct_joins(pos_sp, pos_sp_pt, massgis_sp, massgis_sp_pt)
     #conduct_joins(pos_sp, pos_sp_pt, maine_sp, maine_sp_pt)
     #conduct_joins(pos_sp, pos_sp_pt, ri_local_sp, ri_local_sp_pt)
     #conduct_joins(pos_sp, pos_sp_pt, ri_state_sp, ri_state_sp_pt)
     #conduct_joins(pos_sp, pos_sp_pt, nh_sp, nh_sp_pt)
     #conduct_joins(pos_sp, pos_sp_pt, vt_sp, vt_sp_pt)
-    conduct_joins(pos_sp, pos_sp_pt, padus_sp, padus_sp_pt)
-    conduct_joins(pos_sp, pos_sp_pt, ct_sp, ct_sp_pt)
+    #conduct_joins(pos_sp, pos_sp_pt, padus_sp, padus_sp_pt)
+    #conduct_joins(pos_sp, pos_sp_pt, ct_sp, ct_sp_pt)
     #conduct_joins(pos_sp, pos_sp_pt, bh_sp, bh_sp_pt)
     #conduct_joins(pos_sp, pos_sp_pt, wildlands_sp, wildlands_sp_pt)
     #conduct_joins(pos_sp, pos_sp_pt, srm_sp, srm_sp_pt)
