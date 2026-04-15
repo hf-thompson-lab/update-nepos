@@ -1272,6 +1272,7 @@ def prep_nced(data):
         arcpy.management.AlterField(data, 's_emthd1', 'IntHolder2', 'IntHolder2')
         arcpy.management.AddField(data, 'IntHolder2Type', 'TEXT', field_length=3)
         arcpy.management.AddField(data, "ProtType", "TEXT", field_length=15)
+        arcpy.management.AddField(data, "ProtTypeComments", "TEXT", field_length=200)
         # Because of annoying issues with ArcGIS and capitalization in fields,
         # we can't alter pubaccess into PubAccess. We need to add a new field PubAccess1,
         # recode pubaccess into this field, and then alter PubAccess1 once pubaccess is deleted
@@ -1521,6 +1522,16 @@ def prep_nced(data):
                     row[1] = "Ease"
                 cur.updateRow(row)
         print("Populated ProtType...")
+    
+    def add_prot_type_comment():
+        c = 0
+        with arcpy.da.UpdateCursor(data, ["purpose", "ProtTypComments"]) as cur:
+            for row in cur:
+                if row[0] == 'FARM':
+                    row[1] = 'Farm'
+                    c = c + 1
+                    cur.updateRow(row)
+        print(f"Identified {c} farms from purpose...")
 
     def delete_fields():
         deletes = ['security', 's_emthd2', 'purpose', 'term', 'mon_est', 'day_est', 'rep_acres', 'gis_acres', 'pct_diff',
@@ -1543,6 +1554,7 @@ def prep_nced(data):
         recode_names()
         set_empty_to_null("IntHolder2")
         assign_prot_type()
+        add_prot_type_comment()
         populate_gap()
         recode_access()
         populate_easeyear()
