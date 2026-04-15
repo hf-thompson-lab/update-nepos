@@ -1528,7 +1528,7 @@ def prep_nced(data):
         with arcpy.da.UpdateCursor(data, ["purpose", "ProtTypComments"]) as cur:
             for row in cur:
                 if row[0] == 'FARM':
-                    row[1] = 'Farm'
+                    row[1] = 'Farm (NCED)'
                     c = c + 1
                     cur.updateRow(row)
         print(f"Identified {c} farms from purpose...")
