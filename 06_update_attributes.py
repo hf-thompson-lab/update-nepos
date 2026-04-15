@@ -1904,11 +1904,6 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
         local_pct_overlap_col = local_items[2]
         local_src = local_items[3]
     
-    # Check that comments_only arg is aligned with state arg
-    if comments_only == True and state not in states_with_prot_type_comments:
-        print(f'comments_only is True but {state} does not have ProtTypeComments populated')
-        sys.exit()
-    
     # Get match table column names for state and the the state source description
     state_items = get_state_info(state)
     state_id_col = state_items[0]
