@@ -1886,6 +1886,7 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
     # Create dictionary of {UID: ProtType} pairs for each source
     tnc_prot_types = {key: value for (key, value) in arcpy.da.SearchCursor(tnc, ['UID', 'ProtType'], where_clause=src_query)}
     nced_prot_types = {key: value for (key, value) in arcpy.da.SearchCursor(nced, ['UID', 'ProtType'], where_clause=src_query)}
+    nced_prot_type_comments = {key: value for (key, value) in arcpy.da.SearchCursor(nced, ['UID', 'ProtTypeComments'], where_clause=src_query)}
     padus_prot_types = {key: value for (key, value) in arcpy.da.SearchCursor(padus, ['UID', 'ProtType'], where_clause=src_query)}
     state_prot_types = {key: value for (key, value) in arcpy.da.SearchCursor(state_fc, ['UID', 'ProtType'], where_clause=src_query)}
 
@@ -1944,6 +1945,19 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
                 print(f'Assinging match code -1 to {state} feature {state_orig_id}')
                 state_match_code = -1
             
+            # NCED match codes
+            nced_match_ss = match_table.loc[match_table['FinalID2'] == row[0], ["nced_id", "nced_match_code", "nced_pct_overlap"]].drop_duplicates()
+            nced_matched_src_id = nced_match_ss.iloc[0, 0]
+            nced_match_code = nced_match_ss.iloc[0, 1]
+            nced_pct_overlap = nced_match_ss.iloc[0, 2]
+            nced_orig_id = get_src_orig_id('nced', nced_matched_src_id)
+            try:
+                nced_prot_type = get_source_attribute(nced_prot_types, nced_orig_id)
+                nced_prot_type_comment = get_source_attribute(nced_prot_type_comments, nced_orig_id)
+            except Exception:
+                print(f'Assigning match code -1 to NCED feature {nced_orig_id}')
+                nced_match_code = -1
+            
             if local_fc is not None:
                 local_match_ss = match_table.loc[match_table['FinalID2'] == row[0], [local_id_col, local_code_col, local_pct_overlap_col]].drop_duplicates()
                 local_matched_src_id = local_match_ss.iloc[0, 0]
@@ -1966,6 +1980,13 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
                         row[6] = row[6] + ' -- ' + state_prot_type_comment
                     else:
                         row[6] = state_prot_type_comment
+                    cur.updateRow(row)
+                if ((min_match_code <= nced_match_code <= max_match_code or (nced_match_code == 10 and nced_pct_overlap >= min_pct_overlap)) 
+                and nced_prot_type_comment is not None):
+                    if row[6] is not None and overwrite_comments == False:
+                        row[6] = row[6] + ' -- ' + nced_prot_type_comment
+                    else:
+                        row[6] = nced_prot_type_comment
                     cur.updateRow(row)
                 if ((min_match_code <= local_match_code <= max_match_code or (local_match_code == 10 and local_pct_overlap >= min_pct_overlap)) 
                 and local_prot_type_comment is not None):
@@ -1998,17 +2019,6 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
             except Exception:
                 print(f'Assigning match code -1 to TNC feature {tnc_orig_id}')
                 tnc_match_code = -1
-            # NCED match codes
-            nced_match_ss = match_table.loc[match_table['FinalID2'] == row[0], ["nced_id", "nced_match_code", "nced_pct_overlap"]].drop_duplicates()
-            nced_matched_src_id = nced_match_ss.iloc[0, 0]
-            nced_match_code = nced_match_ss.iloc[0, 1]
-            nced_pct_overlap = nced_match_ss.iloc[0, 2]
-            nced_orig_id = get_src_orig_id('nced', nced_matched_src_id)
-            try:
-                nced_prot_type = get_source_attribute(nced_prot_types, nced_orig_id)
-            except Exception:
-                print(f'Assigning match code -1 to NCED feature {nced_orig_id}')
-                nced_match_code = -1
             # PADUS match codes
             padus_match_ss = match_table.loc[match_table['FinalID2'] == row[0], ["padus_id", "padus_match_code", "padus_pct_overlap"]].drop_duplicates()
             padus_matched_src_id = padus_match_ss.iloc[0, 0]
