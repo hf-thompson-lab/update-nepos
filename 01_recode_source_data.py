@@ -34,7 +34,7 @@ import sys
 # Geodatabase containing all source datasets
 # Projected and preprocessed multipart source layers will also be sent here
 # UPDATE THIS PATH FOR NEXT UPDATE
-arcpy.env.workspace = 'D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/sources.gdb'
+arcpy.env.workspace = 'D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/data.gdb'
 arcpy.env.overwriteOutput = True
 
 # Function to print elapsed time running script
@@ -4435,7 +4435,7 @@ tnc = ""  # Clipped or subset to NE
 nced = "NCED_NE"   # NCED polygons clipped to NE state boundaries - 2024 version
 nced_proj = project_data(nced)
 prep_nced(nced_proj)
-make_single_part(nced_proj, 'D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/sources.gdb')
+make_single_part(nced_proj, 'D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/data.gdb')
 
 
 ###### Call PADUS function #####
