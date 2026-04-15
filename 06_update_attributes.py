@@ -1923,7 +1923,8 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
         query = "State = '" + state + "'"
     
     fields = ['FinalID2', 'PolySource', 'PolySource_FeatID', 
-              'ProtType', 'Source_ProtType', 'Source_ProtType_FeatID', 'ProtTypeComments']
+              'ProtType', 'Source_ProtType', 'Source_ProtType_FeatID', 'ProtTypeComments',
+              'Edit_Date']
     c = 0
     with arcpy.da.UpdateCursor(pos, fields, query) as cur:
         for row in cur:
@@ -2001,6 +2002,7 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
                 unique_comments = list(set(all_comments))       # Get the unique items as a list
                 final_comment = (' -- ').join(unique_comments)  # Recombine the unique items with same separator
                 row[6] = final_comment                          # Update ProtTypeComments
+                row[7] = todays_date                            # Update Edit_Date
                 cur.updateRow(row)
                 continue    # Push to next row so code below is not run
             
