@@ -103,13 +103,14 @@ pos = ""
 ## SOURCES ##
 # Source spatial data (outputs of recode_source_data.py)
 # Located in same GDB as NEPOS
+# NOTE: These are mostly multi-state datasets
+# State layers are defined further below along with state matching tables
+# Make sure these layer names are correct!
 tnc = 'TNC_SA2022_albers_sp'
-nced = 'NCED_albers_sp'
+nced = 'NCED_NE_albers_sp'
 padus = 'PADUS4_0Fee_Easement_NE_sp'
 bh = "POS_from_Brian_Hall_albers_sp"
-deep = "CT_DEEP_albers_sp"
 wild = "wildlands_albers_sp"
-massgis = "MassGIS_OpenSpace_albers_sp"
 
 ### OTHER VARIABLES ###
 ## SOURCE DESCRIPTIONS ##
@@ -3300,62 +3301,54 @@ def update_prot_duration_from_gap_status(state, new_data_only=True, include_temp
     print('Assigned ProtDuration')
 
 
-####### CALL FUNCTIONS FOR EACH STATE #######
-# CSVs of polygon ID matches
-ct_match_table = pd.read_csv('D:/Lee/POS/Update_2023/Data/matching/nepos_ct_matches_20250306.csv')
-ma_match_table = pd.read_csv("D:/Lee/POS/Update_2023/Data/matching/nepos_ma_matches_20250327.csv")
-
+####### STATE LAYERS AND MATCH TABLES FOR EACH STATE #######
 #### ME ####
-pos = "POS_v2_24_sp"
-me_conserved_lands = "Maine_Conserved_Lands_albers_sp"
-me_match_table = pd.read_csv("D:/Lee/POS/Update_2023/Data/matching/nepos_me_matches_20250411.csv",
+me_conserved_lands = "Maine_Conserved_Lands_albers_sp_2025_03"
+me_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/match_tables/nepos_me_matches_2025-07-18.csv",
                              dtype={'PolySource_FeatID': 'string', 'megis_id': 'string'})
-ma_match_table = pd.read_csv("D:/Lee/POS/Update_2023/Data/matching/nepos_ma_matches_2025-04-28.csv",
+
+#### MA ####
+massgis = "MassGIS_OpenSpace_albers_sp_2025_01"
+ma_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/match_tables/nepos_ma_matches_2025-07-18.csv",
                              dtype={'FinalID2': 'string', 'PolySource': 'string', 'PolySource_FeatID': 'string',
                                     'massgis_id': 'string', 'tnc_id': 'string', 'nced_id': 'string', 'padus_id': 'string'})
 
-pos = "POS_v2_25_sp"
-nh_cpl = "NH_Conservation_Public_Lands_albers_sp"
-nh_match_table = pd.read_csv("D:/Lee/POS/Update_2023/Data/matching/nepos_nh_matches_2025-05-05.csv",
+#### NH ####
+nh_cpl = "NH_Conservation_Public_Lands_albers_sp_2025_03"
+nh_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/match_tables/nepos_nh_matches_2025-07-18.csv",
                              dtype={'FinalID2': 'string', 'PolySource': 'string', 'PolySource_FeatID': 'string', 
                                     'nh_id': 'string', 'tnc_id': 'string', 'nced_id': 'string', 'padus_id': 'string'})
 
-pos = "POS_v2_27_sp"
-ri_state = "RI_State_albers_sp"
-ri_local = "RI_Local_albers_sp"
-ri_match_table = pd.read_csv("D:/Lee/POS/Update_2023/Data/matching/nepos_ri_matches_2025-05-09.csv",
+#### RI ####
+ri_state = "RI_State_albers_sp_2025_02"
+ri_local = "RI_Local_albers_sp_2025_04"
+ri_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/match_tables/nepos_ri_matches_2025-05-09.csv",
                              dtype={"FinalID2": "string", "PolySource": "string", "PolySource_FeatID": "string",
                                     "ri_state_id" : "string", "ri_local_id": "string", "tnc_id": "string", "nced_id": "string", "padus_id": "string"})
 
-pos = "POS_v2_28_sp"
-vt_pld = "Cadastral_PROTECTEDLND_poly_albers_sp"
-vt_match_table = pd.read_csv("D:/Lee/POS/Update_2023/Data/matching/nepos_vt_matches_2025-05-22.csv",
+#### VT ####
+vt_pld = "Cadastral_PROTECTEDLND_poly_albers_sp_2021_06"
+vt_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/match_tables/nepos_vt_matches_2025-07-18.csv",
                              dtype={"FinalID2": "string", "PolySource": "string", "PolySource_FeatID": "string",
                                     "vt_id": "string", "tnc_id": "string", "nced_id": "string", "padus_id": "string"})
 
-pos = "POS_v2_29_sp"
-vt_match_table = pd.read_csv("D:/Lee/POS/Update_2023/Data/matching/nepos_vt_matches_2025-06-11.csv",
-                             dtype={"FinalID2": "string", "PolySource": "string", "PolySource_FeatID": "string",
-                                    "vt_id": "string", "tnc_id": "string", "nced_id": "string", "padus_id": "string"})
-
-# March 2026 - observed some data issues with 2003 in CT
-# Issue was related to TNC dates from 2003 - all CT rows w/ YearProt 2003 in TNC 2018 data have
-# date precision "pre" which means it was protected before 2003 not during 2003. Unfortunately
-# these got picked up by PADUS and there's now very little confidence in any CT data from 2003.
-# So we are going to correct it and probably set most of these to 0 (unknown) unless there is
-# another valid year from a different source (unlikely in CT)
-pos = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction\\ct_2003_correction.gdb\\nepos_v2_0_sp_internal"
-ct_match_table = pd.read_csv("D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction\\tables\\nepos_ct_matches_2026-03-25.csv",
+#### CT ####
+ct_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/match_tables/nepos_ct_matches_2026-03-25.csv",
                              dtype={'FinalID2': 'string', 'PolySource': 'string', 'PolySource_FeatID': 'string',
                                     'ct_deep_id': 'string', 'tnc_id': 'string', 'nced_id': 'string', 'padus_id': 'string'})
-ct_deep = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_data\\Update_2025_v2\\source_and_aux_data.gdb\\CT_DEEP_Property_albers_sp_2025_01"
+ct_deep = "CT_DEEP_Property_albers_sp_2025_01"
+
+### POS ####
+# NOTE: Make sure the POS is updated to the correct version!!!!
+pos = "nepos_v2_0_sp_internal"
 
 # Within the 'try' block is where you add the functions you actually want to run!
 # Recommend working on one attribute (or set of related attributes) at a time, and doing QAQC
 # on each attribute as you go, then making a copy before moving onto the next attribute
 # That way if something doesn't work properly, you don't have to start everything over, just that one attribute!
 try:
-    correct_ct_2003_rows(ct_deep, ct_match_table, take_only_known=False, new_data_only=False)
+    update_prot_type("VT", vt_pld, vt_match_table, local_fc=None, comments_only=True, overwrite_comments=False, 
+                     unknown_only=False, new_data_only=False, take_only_known=False)
 except Exception:
     print(traceback.format_exc())  # Print the error
     sys.exit()                     # Stop the script
