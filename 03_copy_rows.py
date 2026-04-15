@@ -11,7 +11,7 @@
 
 import arcpy
 
-arcpy.env.workspace = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction\\ct_2003_correction.gdb"
+arcpy.env.workspace = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\improve_farm_id\\data.gdb"
 arcpy.env.overwriteOutput = True
 
 pos = "nepos_v2_0_sp_internal"
@@ -19,7 +19,7 @@ pos = "nepos_v2_0_sp_internal"
 #arcpy.management.CalculateGeometryAttributes(pos, [["Area_Ac", "AREA"]], area_unit="ACRES_US")
 #arcpy.management.CalculateGeometryAttributes(pos, [["Area_Ha", "AREA"]], area_unit="HECTARES")
 
-out_file = f"D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\Update_2025_v2\\ct_2003_correction\\tables\\{pos}.dbf"
+out_file = f"D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\improve_farm_id\\tables\\{pos}.dbf"
 
 arcpy.management.CopyRows(pos, out_file)
 print("Done")
