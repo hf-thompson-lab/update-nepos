@@ -136,7 +136,7 @@ def update_type(state = None, sql = None):
                 continue
             if row[8] is not None:
                 if ('agricultural' in row[8].lower() or ' APR' in row[8] or 'farmstead' in row[8].lower() 
-                    or 'Agricultural Land Preservation' in row[8] or 'farm labor' in row[8].lower() or row[8] == 'Farm (NCED)'):
+                    or 'Agricultural Land Preservation' in row[8] or 'farm labor' in row[8].lower() or 'farm (nced)' in row[8].lower()):
                     row[0] = "Farm"
                     f = f + 1
                     cur.updateRow(row)
