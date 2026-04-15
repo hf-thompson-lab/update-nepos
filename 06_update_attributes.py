@@ -2037,12 +2037,14 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
                     row[4] = local_src
                     row[5] = local_orig_id
                     c = c + 1
+                    row[7] = todays_date
                     cur.updateRow(row)   # Update row
                     continue             # And continue to next so code below is not run
             if (min_match_code <= state_match_code <= max_match_code or (state_match_code == 10 and state_pct_overlap >= min_pct_overlap)):
                 row[3] = state_prot_type
                 row[4] = state_src
                 row[5] = state_orig_id
+                row[7] = todays_date
                 if state in states_with_prot_type_comments and state_prot_type_comment is not None:
                     if row[6] is not None:
                         row[6] = row[6] + '; ' + state_prot_type_comment
@@ -2053,16 +2055,19 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
                 row[3] = tnc_prot_type
                 row[4] = tnc_src
                 row[5] = tnc_orig_id
+                row[7] = todays_date
                 c = c + 1
             elif (min_match_code <= nced_match_code <= max_match_code or (nced_match_code == 10 and nced_pct_overlap >= min_pct_overlap)):
                 row[3] = nced_prot_type
                 row[4] = nced_src
                 row[5] = nced_orig_id
+                row[7] = todays_date
                 c = c + 1
             elif (min_match_code <= padus_match_code <= max_match_code or (padus_match_code == 10 and padus_pct_overlap >= min_pct_overlap)):
                 row[3] = padus_prot_type
                 row[4] = padus_src
                 row[5] = padus_orig_id
+                row[7] = todays_date
                 c = c + 1
             cur.updateRow(row)
     if comments_only == True:
