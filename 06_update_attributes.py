@@ -1876,6 +1876,11 @@ def update_int_holder2(state, match_table, state_fc=None, null_only=True, new_da
 #  - new_data_only (boolean): should protection type be updated only for new rows?
 #                             new rows are identified by lack of FinalID
 #  - take_only_known (boolean): should we only update NEPOS if the source has a known value (not unknown)?
+#
+# NOTE: This function is designed to update EITHER ProtTypeComments OR ProtType. So this function
+# should be run twice if doing a complete update - once with comments_only = False (to update ProtType)
+# and once with comments_only = True to update ProtTypeComments. i know this is clunky but it's just
+# easier to separate ProtType from ProtTypeComments.
 def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=False, overwrite_comments=False, 
                      unknown_only=True, new_data_only=True, take_only_known=True):
     # Subset source data by state and (optionally) by attribute value
@@ -2081,11 +2086,6 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
                 row[4] = state_src
                 row[5] = state_orig_id
                 row[7] = todays_date
-                if state in states_with_prot_type_comments and state_prot_type_comment is not None:
-                    if row[6] is not None:
-                        row[6] = row[6] + '; ' + state_prot_type_comment
-                    else:
-                        row[6] = state_prot_type_comment
                 c = c + 1
             if (min_match_code <= tnc_match_code <= max_match_code or (tnc_match_code == 10 and tnc_pct_overlap >= min_pct_overlap)):
                 row[3] = tnc_prot_type
