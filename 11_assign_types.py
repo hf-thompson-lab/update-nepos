@@ -101,7 +101,7 @@ def update_type(state = None, sql = None):
     # is met, "continue" is used to push to the next row after the row is updated
     # This way, don't need to worry about things being missed or overwritten.
     # e.g., if ProtTypeComments is not null but isn't about APR
-    # The order of these statements matters, because as soon as one is successful it goes to the next row
+    # IMPORTANT: The order of these statements matters, because as soon as one is successful it goes to the next row
     # These criteria may need to be updated over time if additional keywords, interest holders, etc.
     # become prominent enough in the data that we notice them
     if state is not None:
@@ -120,6 +120,21 @@ def update_type(state = None, sql = None):
     cc = 0
     with arcpy.da.UpdateCursor(fc, fields, query) as cur:
         for row in cur:
+            ### Wildlands - based on presence of any value (even 0) for WildYear
+            # Keep this one first because wildlands might also be tagged as something else (e.g., part of a protected farm)
+            if row[7] is not None:
+                row[0] = "Wildland"
+                w = w + 1
+                cur.updateRow(row)
+                continue
+
+            ### Community forests
+            if 'community forest' in row[5].lower():
+                row[0] = "CF"
+                cf = cf + 1
+                cur.updateRow(row)
+                continue
+
             ### Farmland
             # Based on GAP status
             if row[3] == 39:
@@ -149,20 +164,6 @@ def update_type(state = None, sql = None):
                     f = f + 1
                     cur.updateRow(row)
                     continue
-            
-            ### Wildlands - based on presence of any value (even 0) for WildYear
-            if row[7] is not None:
-                row[0] = "Wildland"
-                w = w + 1
-                cur.updateRow(row)
-                continue
-            
-            ### Community forests
-            if 'community forest' in row[5].lower():
-                row[0] = "CF"
-                cf = cf + 1
-                cur.updateRow(row)
-                continue
             
             ### Cemeteries
             if 'cemetery' in row[5].lower() or 'burial ground' in row[5].lower():
