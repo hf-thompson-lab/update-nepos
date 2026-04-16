@@ -177,7 +177,7 @@ nced <- 'nepos_nced_match_table_2026-04-16_full.csv'
 padus <- 'nepos_padus_match_table_2026-04-16_full.csv'
 combine_match_tables('VT', vt, tnc, nced, padus)
 
-me <- 'nepos_megis_match_table_2025-07-18_full.csv'
+me <- 'nepos_megis_match_table_2026-04-16_full.csv'
 combine_match_tables('ME', me, tnc, nced, padus)
 
 ct <- "nepos_ct_deep_match_table_2026-04-16_full.csv"
