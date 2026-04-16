@@ -22,7 +22,7 @@
 
 # Directory where outputs from spatial_matching.py were sent
 # Output tables will also be saved here
-setwd("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/Update_2025_v2/ct_2003_correction/tables/")
+setwd("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/tables/")
 
 # Script containing functions used to summarize output tables
 source("D:/Thompson_Lab_POS/Code/update-nepos/04_find_matching_polygons_functions.R")
@@ -47,7 +47,7 @@ nepos <- 'nepos_v2_0_sp_internal.dbf'
 # ALSO NOTE FOR MULTI-STATE SOURCES: Be sure to update the 'state' parameter
 # for TNC, PADUS, NCED, and any other multi-state sources!
 
-# TNC - last used 3/2026 ct 2003 correction
+# TNC - last used 4/2026 farmland id
 dbf1.tnc <- 'POS_join_TNC_SA2022_albers_sp_pt_1to1.dbf'
 dbf2.tnc <- 'TNC_SA2022_albers_sp_join_POS_pt_1to1.dbf'
 dbf3.tnc <- 'POS_join_TNC_SA2022_albers_sp_pt_1toM.dbf'
@@ -56,16 +56,16 @@ pct.csv.tnc <- 'tab_intersect_nepos_v2_0_sp_internal_TNC_SA2022_albers_sp.csv'  
 tnc <- create_spatial_match_table(dbf1.tnc, dbf2.tnc, dbf3.tnc, dbf4.tnc, pct.csv.tnc, nepos,
                                   source = 'tnc', state = 'CT', save_csv = T)
 
-# NCED - last used 3/2026 ct 2003 correction
-dbf1.nced <- 'POS_join_NCED_albers_sp_2024_07_pt_1to1.dbf'
-dbf2.nced <- 'NCED_albers_sp_2024_07_join_POS_pt_1to1.dbf'
-dbf3.nced <- 'POS_join_NCED_albers_sp_2024_07_pt_1toM.dbf'
-dbf4.nced <- 'NCED_albers_sp_2024_07_join_POS_pt_1toM.dbf'
-pct.csv.nced <- 'tab_intersect_nepos_v2_0_sp_internal_NCED_albers_sp_2024_07.csv'  # Make sure using correct file
+# NCED - last used 4/2026 farmland id
+dbf1.nced <- 'POS_join_NCED_NE_albers_sp_pt_1to1.dbf'
+dbf2.nced <- 'NCED_NE_albers_sp_join_POS_pt_1to1.dbf'
+dbf3.nced <- 'POS_join_NCED_NE_albers_sp_pt_1toM.dbf'
+dbf4.nced <- 'NCED_NE_albers_sp_join_POS_pt_1toM.dbf'
+pct.csv.nced <- 'tab_intersect_nepos_v2_0_sp_internal_NCED_NE_albers_sp.csv'  # Make sure using correct file
 nced <- create_spatial_match_table_nced(dbf1.nced, dbf2.nced, dbf3.nced, dbf4.nced, pct.csv.nced, nepos,
                                         source = 'nced', state = 'CT', save_csv = T)
 
-# PADUS - last used 3/2026 ct 2003 correction
+# PADUS - last used 4/2026 farmland id
 dbf1.padus <- 'POS_join_PADUS4_0Fee_Easement_NE_sp_pt_1to1.dbf'
 dbf2.padus <- 'PADUS4_0Fee_Easement_NE_sp_join_POS_pt_1to1.dbf'
 dbf3.padus <- 'POS_join_PADUS4_0Fee_Easement_NE_sp_pt_1toM.dbf'
@@ -75,7 +75,7 @@ padus <- create_spatial_match_table(dbf1.padus, dbf2.padus, dbf3.padus, dbf4.pad
                                     source = 'padus', state = 'CT', save_csv = T)
 
 ###### MATCHING TABLES FOR STATE SOURCES
-# CT DEEP - for 3/2026 2003 ct correction work
+# CT DEEP - last used 4/2026 farmland id
 dbf1.ct <- 'POS_join_CT_DEEP_Property_albers_sp_2025_01_pt_1to1.dbf'
 dbf2.ct <- 'CT_DEEP_Property_albers_sp_2025_01_join_POS_pt_1to1.dbf'
 dbf3.ct <- 'POS_join_CT_DEEP_Property_albers_sp_2025_01_pt_1toM.dbf'
@@ -84,57 +84,57 @@ pct.csv.ct <- 'tab_intersect_nepos_v2_0_sp_internal_CT_DEEP_Property_albers_sp_2
 ct <- create_spatial_match_table(dbf1.ct, dbf2.ct, dbf3.ct, dbf4.ct, pct.csv.ct, nepos,
                                  source = 'ct_deep', state = 'CT', save_csv = T)
 
-# RI Local
-dbf1.ri.local <- 'POS_join_RI_Local_albers_sp_pt_1to1.dbf'
-dbf2.ri.local <- 'RI_Local_albers_sp_join_POS_pt_1to1.dbf'
-dbf3.ri.local <- 'POS_join_RI_Local_albers_sp_pt_1toM.dbf'
-dbf4.ri.local <- 'RI_Local_albers_sp_join_POS_pt_1toM.dbf'
-pct.csv.ri.local <- 'tab_intersect_POS_v2_26_sp_RI_Local_albers_sp.csv'  # Make sure using correct file
+# RI Local - last used 4/2026 farmland id
+dbf1.ri.local <- 'POS_join_RI_Local_albers_sp_2025_04_pt_1to1.dbf'
+dbf2.ri.local <- 'RI_Local_albers_sp_2025_04_join_POS_pt_1to1.dbf'
+dbf3.ri.local <- 'POS_join_RI_Local_albers_sp_2025_04_pt_1toM.dbf'
+dbf4.ri.local <- 'RI_Local_albers_sp_2025_04_join_POS_pt_1toM.dbf'
+pct.csv.ri.local <- 'tab_intersect_nepos_v2_0_sp_internal_RI_Local_albers_sp_2025_04.csv'  # Make sure using correct file
 ri.local <- create_spatial_match_table(dbf1.ri.local, dbf2.ri.local, dbf3.ri.local, dbf4.ri.local,
                                        pct.csv.ri.local, nepos, source = 'ri_local', state = 'RI', save_csv = T)
 
-# RI State
-dbf1.ri.state <- 'POS_join_RI_State_albers_sp_pt_1to1.dbf'
-dbf2.ri.state <- 'RI_State_albers_sp_join_POS_pt_1to1.dbf'
-dbf3.ri.state <- 'POS_join_RI_State_albers_sp_pt_1toM.dbf'
-dbf4.ri.state <- 'RI_State_albers_sp_join_POS_pt_1toM.dbf'
-pct.csv.ri.state <- 'tab_intersect_POS_v2_26_sp_RI_State_albers_sp.csv'  # Make sure using correct file
+# RI State - last used 4/2026 farmland id
+dbf1.ri.state <- 'POS_join_RI_State_albers_sp_2025_02_pt_1to1.dbf'
+dbf2.ri.state <- 'RI_State_albers_sp_2025_02_join_POS_pt_1to1.dbf'
+dbf3.ri.state <- 'POS_join_RI_State_albers_sp_2025_02_pt_1toM.dbf'
+dbf4.ri.state <- 'RI_State_albers_sp_2025_02_join_POS_pt_1toM.dbf'
+pct.csv.ri.state <- 'tab_intersect_nepos_v2_0_sp_internal_RI_State_albers_sp_2025_02.csv'  # Make sure using correct file
 ri.state <- create_spatial_match_table(dbf1.ri.state, dbf2.ri.state, dbf3.ri.state, dbf4.ri.state,
                                        pct.csv.ri.state, nepos, source = 'ri_state', state = 'RI', save_csv = T)
 
-# MA
-dbf1.massgis <- 'POS_join_MassGIS_OpenSpace_albers_sp_pt_1to1.dbf'
-dbf2.massgis <- 'MassGIS_OpenSpace_albers_sp_join_POS_pt_1to1.dbf'
-dbf3.massgis <- 'POS_join_MassGIS_OpenSpace_albers_sp_pt_1toM.dbf'
-dbf4.massgis <- 'MassGIS_OpenSpace_albers_sp_join_POS_pt_1toM.dbf'
-pct.csv.massgis <- 'tab_intersect_POS_v2_29_sp_MassGIS_OpenSpace_albers_sp.csv'  # Make sure using correct file
+# MA - last used 4/2026 farmland id
+dbf1.massgis <- 'POS_join_MassGIS_OpenSpace_albers_sp_2025_01_pt_1to1.dbf'
+dbf2.massgis <- 'MassGIS_OpenSpace_albers_sp_2025_01_join_POS_pt_1to1.dbf'
+dbf3.massgis <- 'POS_join_MassGIS_OpenSpace_albers_sp_2025_01_pt_1toM.dbf'
+dbf4.massgis <- 'MassGIS_OpenSpace_albers_sp_2025_01_join_POS_pt_1toM.dbf'
+pct.csv.massgis <- 'tab_intersect_nepos_v2_0_sp_internal_MassGIS_OpenSpace_albers_sp_2025_01.csv'  # Make sure using correct file
 massgis <- create_spatial_match_table(dbf1.massgis, dbf2.massgis, dbf3.massgis, dbf4.massgis, pct.csv.massgis, nepos,
                                  source = 'massgis', state = 'MA', save_csv = T)
 
-# NH
-dbf1.nh <- 'POS_join_NH_Conservation_Public_Lands_albers_sp_pt_1to1.dbf'
-dbf2.nh <- 'NH_Conservation_Public_Lands_albers_sp_join_POS_pt_1to1.dbf'
-dbf3.nh <- 'POS_join_NH_Conservation_Public_Lands_albers_sp_pt_1toM.dbf'
-dbf4.nh <- 'NH_Conservation_Public_Lands_albers_sp_join_POS_pt_1toM.dbf'
-pct.csv.nh <- 'tab_intersect_POS_v2_29_sp_NH_Conservation_Public_Lands_albers_sp.csv'  # Make sure using correct file
+# NH - last used 4/2026 farmland id
+dbf1.nh <- 'POS_join_NH_Conservation_Public_Lands_albers_sp_2025_03_pt_1to1.dbf'
+dbf2.nh <- 'NH_Conservation_Public_Lands_albers_sp_2025_03_join_POS_pt_1to1.dbf'
+dbf3.nh <- 'POS_join_NH_Conservation_Public_Lands_albers_sp_2025_03_pt_1toM.dbf'
+dbf4.nh <- 'NH_Conservation_Public_Lands_albers_sp_2025_03_join_POS_pt_1toM.dbf'
+pct.csv.nh <- 'tab_intersect_nepos_v2_0_sp_internal_NH_Conservation_Public_Lands_albers_sp_2025_03.csv'  # Make sure using correct file
 nh <- create_spatial_match_table(dbf1.nh, dbf2.nh, dbf3.nh, dbf4.nh, pct.csv.nh, nepos,
                                     source = 'nh', state = 'NH', save_csv = T)
 
-# MEGIS
-dbf1.megis <- 'POS_join_Maine_Conserved_Lands_albers_sp_pt_1to1.dbf'
-dbf2.megis <- 'Maine_Conserved_Lands_albers_sp_join_POS_pt_1to1.dbf'
-dbf3.megis <- 'POS_join_Maine_Conserved_Lands_albers_sp_pt_1toM.dbf'
-dbf4.megis <- 'Maine_Conserved_Lands_albers_sp_join_POS_pt_1toM.dbf'
-pct.csv.megis <- 'tab_intersect_POS_v2_29_sp_Maine_Conserved_Lands_albers_sp.csv'  # Make sure using correct file
+# MEGIS - last used 4/2026 farmland id
+dbf1.megis <- 'POS_join_Maine_Conserved_Lands_albers_sp_2025_03_pt_1to1.dbf'
+dbf2.megis <- 'Maine_Conserved_Lands_albers_sp_2025_03_join_POS_pt_1to1.dbf'
+dbf3.megis <- 'POS_join_Maine_Conserved_Lands_albers_sp_2025_03_pt_1toM.dbf'
+dbf4.megis <- 'Maine_Conserved_Lands_albers_sp_2025_03_join_POS_pt_1toM.dbf'
+pct.csv.megis <- 'tab_intersect_nepos_v2_0_sp_internal_Maine_Conserved_Lands_albers_sp_2025_03.csv'  # Make sure using correct file
 megis <- create_spatial_match_table(dbf1.megis, dbf2.megis, dbf3.megis, dbf4.megis, pct.csv.megis, nepos,
                                     source = 'megis', state = 'ME', save_csv = T)
 
-# VT
-dbf1.vt <- 'POS_join_Cadastral_PROTECTEDLND_poly_albers_sp_pt_1to1.dbf'
-dbf2.vt <- 'Cadastral_PROTECTEDLND_poly_albers_sp_join_POS_pt_1to1.dbf'
-dbf3.vt <- 'POS_join_Cadastral_PROTECTEDLND_poly_albers_sp_pt_1toM.dbf'
-dbf4.vt <- 'Cadastral_PROTECTEDLND_poly_albers_sp_join_POS_pt_1toM.dbf'
-pct.csv.vt <- 'tab_intersect_POS_v2_29_sp_Cadastral_PROTECTEDLND_poly_albers_sp.csv'  # Make sure using correct file
+# VT - last used 4/2026 farmland id
+dbf1.vt <- 'POS_join_Cadastral_PROTECTEDLND_poly_albers_sp_2021_06_pt_1to1.dbf'
+dbf2.vt <- 'Cadastral_PROTECTEDLND_poly_albers_sp_2021_06_join_POS_pt_1to1.dbf'
+dbf3.vt <- 'POS_join_Cadastral_PROTECTEDLND_poly_albers_sp_2021_06_pt_1toM.dbf'
+dbf4.vt <- 'Cadastral_PROTECTEDLND_poly_albers_sp_2021_06_join_POS_pt_1toM.dbf'
+pct.csv.vt <- 'tab_intersect_nepos_v2_0_sp_internal_Cadastral_PROTECTEDLND_poly_albers_sp_2021_06.csv'  # Make sure using correct file
 vt <- create_spatial_match_table(dbf1.vt, dbf2.vt, dbf3.vt, dbf4.vt, pct.csv.vt, nepos,
                                  source = 'vt', state = 'VT', save_csv = T)
 
@@ -172,10 +172,10 @@ combine_match_tables('VT', vt, tnc, nced, padus)
 me <- 'nepos_megis_match_table_2025-07-18_full.csv'
 combine_match_tables('ME', me, tnc, nced, padus)
 
-ct <- "nepos_ct_deep_match_table_2026-03-25_full.csv"
-padus <- "nepos_padus_match_table_2026-03-25_full.csv"
-tnc <- "nepos_tnc_match_table_2026-03-25_full.csv"
-nced <- "nepos_nced_match_table_2026-03-25_full.csv"
+ct <- "nepos_ct_deep_match_table_2026-04-16_full.csv"
+padus <- "nepos_padus_match_table_2026-04-16_full.csv"
+tnc <- "nepos_tnc_match_table_2026-04-16_full.csv"
+nced <- "nepos_nced_match_table_2026-04-16_full.csv"
 combine_match_tables('CT', ct, tnc, nced, padus)
 
 
