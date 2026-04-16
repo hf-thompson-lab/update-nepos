@@ -1970,42 +1970,76 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
             
             # Since only state (and local for RI) sources have ProtTypeComments info, we can check for that here if
             # comments_only == True, to save time checking matches with other sources
+            # An issue with comments is they can become too long if we just keep overwriting them
+            # So we will try to only add comments that aren't already in there
+            # There may be additional errors that crop up with this over time and need to be handled...
             if comments_only == True:
+                # If overwrite_comments == True, clear ProtTypeComments before proceding with update
+                if overwrite_comments == True:
+                    row[6] = None
+                    cur.updateRow(row)
+
+                # Comments from different sources will be split by ' -- ' so split on that character
+                # Purpose is to create a list of the unique comments (i.e., comments from different sources)
+                # that we can compare against in order to update ProtTypeComments
+                if row[6] is not None:
+                    current_comments = row[6].split(" -- ")
+                    unique_comments = list(set(current_comments))       # Get the unique items as a list
+                    unique_comments = [x for x in unique_comments if len(x) > 0]  # Drop any empty values
+                else:
+                    unique_comments = []     # Need to define unique_comments even if no comments for subsequent code
+
+                # Initialize a variable to create the updated comment
+                # Because this can get quite long (longer than field length), we can't update ProtTypeComments yet
+                # We have to combine all the comments together, then reduce to unique comments
+                # before we can update ProtTypeComments (row[6])
+                # This variable stores all the comments that will be reduced and used to update row[6]
+                # It is initialized as the current ProtTypeComments
+                updated_comment = row[6]
+
+                # Check for new comments, appending to updated_comment if present and depending on whether overwrite_comments = True or not
+                if ((min_match_code <= nced_match_code <= max_match_code or (nced_match_code == 10 and nced_pct_overlap >= min_pct_overlap)) 
+                and nced_prot_type_comment is not None):
+                    if nced_prot_type_comment in unique_comments:
+                        pass
+                    elif updated_comment is not None:
+                        updated_comment = updated_comment + ' -- ' + nced_prot_type_comment
+                    else:
+                        updated_comment = nced_prot_type_comment
+
                 if state in states_with_prot_type_comments:
                     if ((min_match_code <= state_match_code <= max_match_code or (state_match_code == 10 and state_pct_overlap >= min_pct_overlap)) 
                     and state_prot_type_comment is not None):
-                        if row[6] is not None and overwrite_comments == False:
-                            row[6] = row[6] + ' -- ' + state_prot_type_comment
+                        if state_prot_type_comment in unique_comments:
+                            pass
+                        elif updated_comment is not None:
+                            updated_comment = updated_comment + ' -- ' + state_prot_type_comment
                         else:
-                            row[6] = state_prot_type_comment
-                        cur.updateRow(row)
-                if ((min_match_code <= nced_match_code <= max_match_code or (nced_match_code == 10 and nced_pct_overlap >= min_pct_overlap)) 
-                and nced_prot_type_comment is not None):
-                    if row[6] is not None and overwrite_comments == False:
-                        row[6] = row[6] + ' -- ' + nced_prot_type_comment
-                    else:
-                        row[6] = nced_prot_type_comment
-                    cur.updateRow(row)
+                            updated_comment = state_prot_type_comment
+
                 if local_fc is not None:
                     if ((min_match_code <= local_match_code <= max_match_code or (local_match_code == 10 and local_pct_overlap >= min_pct_overlap)) 
                     and local_prot_type_comment is not None):
-                        if row[6] is not None and overwrite_comments == False:
-                            row[6] = row[6] + ' -- ' + local_prot_type_comment
+                        if local_prot_type_comment in unique_comments:
+                            pass
+                        elif updated_comment is not None:
+                            updated_comment = updated_comment + ' -- ' + local_prot_type_comment
                         else:
-                            row[6] = local_prot_type_comment
-                        cur.updateRow(row)
+                            updated_comment = local_prot_type_comment
                 
                 # Reduce redundancy in ProtTypeComments (not perfectly but will handle situations
                 # where new comments are the same as old comments)
                 # e.g., if old comment is Easement is CE and nothing has changed, the new comment
                 # will be Easement is CE -- Easement is CE --> simplified to Easement is CE again
                 # Separate comments from different updates by the string used to connect them above
-                all_comments = ' -- '.split(row[6])
-                unique_comments = list(set(all_comments))       # Get the unique items as a list
-                final_comment = (' -- ').join(unique_comments)  # Recombine the unique items with same separator
-                row[6] = final_comment                          # Update ProtTypeComments
-                row[7] = todays_date                            # Update Edit_Date
-                cur.updateRow(row)
+                if updated_comment is not None:
+                    all_comments = updated_comment.split(" -- ")
+                    unique_comments = list(set(all_comments))       # Get the unique items as a list
+                    unique_comments = [x for x in unique_comments if len(x) > 0]  # Drop empty values
+                    final_comment = (' -- ').join(unique_comments)  # Recombine the unique items with same separator
+                    row[6] = final_comment                          # Update ProtTypeComments
+                    row[7] = todays_date                            # Update Edit_Date
+                    cur.updateRow(row)
                 continue    # Push to next row so code below is not run
             
             # TNC match codes
@@ -3313,36 +3347,36 @@ def update_prot_duration_from_gap_status(state, new_data_only=True, include_temp
 ####### STATE LAYERS AND MATCH TABLES FOR EACH STATE #######
 #### ME ####
 me_conserved_lands = "Maine_Conserved_Lands_albers_sp_2025_03"
-me_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/match_tables/nepos_me_matches_2025-07-18.csv",
+me_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/tables/nepos_me_matches_2026-04-16.csv",
                              dtype={'PolySource_FeatID': 'string', 'megis_id': 'string'})
 
 #### MA ####
 massgis = "MassGIS_OpenSpace_albers_sp_2025_01"
-ma_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/match_tables/nepos_ma_matches_2025-07-18.csv",
+ma_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/tables/nepos_ma_matches_2026-04-16.csv",
                              dtype={'FinalID2': 'string', 'PolySource': 'string', 'PolySource_FeatID': 'string',
                                     'massgis_id': 'string', 'tnc_id': 'string', 'nced_id': 'string', 'padus_id': 'string'})
 
 #### NH ####
 nh_cpl = "NH_Conservation_Public_Lands_albers_sp_2025_03"
-nh_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/match_tables/nepos_nh_matches_2025-07-18.csv",
+nh_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/tables/nepos_nh_matches_2026-04-16.csv",
                              dtype={'FinalID2': 'string', 'PolySource': 'string', 'PolySource_FeatID': 'string', 
                                     'nh_id': 'string', 'tnc_id': 'string', 'nced_id': 'string', 'padus_id': 'string'})
 
 #### RI ####
 ri_state = "RI_State_albers_sp_2025_02"
 ri_local = "RI_Local_albers_sp_2025_04"
-ri_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/match_tables/nepos_ri_matches_2025-05-09.csv",
+ri_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/tables/nepos_ri_matches_2026-04-16.csv",
                              dtype={"FinalID2": "string", "PolySource": "string", "PolySource_FeatID": "string",
                                     "ri_state_id" : "string", "ri_local_id": "string", "tnc_id": "string", "nced_id": "string", "padus_id": "string"})
 
 #### VT ####
 vt_pld = "Cadastral_PROTECTEDLND_poly_albers_sp_2021_06"
-vt_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/match_tables/nepos_vt_matches_2025-07-18.csv",
+vt_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/tables/nepos_vt_matches_2026-04-16.csv",
                              dtype={"FinalID2": "string", "PolySource": "string", "PolySource_FeatID": "string",
                                     "vt_id": "string", "tnc_id": "string", "nced_id": "string", "padus_id": "string"})
 
 #### CT ####
-ct_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/match_tables/nepos_ct_matches_2026-03-25.csv",
+ct_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/tables/nepos_ct_matches_2026-04-16.csv",
                              dtype={'FinalID2': 'string', 'PolySource': 'string', 'PolySource_FeatID': 'string',
                                     'ct_deep_id': 'string', 'tnc_id': 'string', 'nced_id': 'string', 'padus_id': 'string'})
 ct_deep = "CT_DEEP_Property_albers_sp_2025_01"
