@@ -44,8 +44,14 @@ nepos <- 'nepos_v2_0_sp_internal.dbf'
 # (and note that if you have different source file names then that will
 # be reflected in the DBF tables too and you will need to update the lines below).
 #
-# ALSO NOTE FOR MULTI-STATE SOURCES: Be sure to update the 'state' parameter
-# for TNC, PADUS, NCED, and any other multi-state sources!
+# ALSO NOTE FOR MULTI-STATE SOURCES: The state parameter does not actually affect the table,
+# it just affects the messages printed by the script. You don't need to remake the multi-state
+# source tables for every state, but if it helps you to do so, it doesn't hurt either
+# (doesn't take long to recreate tables and it can help reduce confusion!)
+# The only thing to be aware of is the variables tnc, nced, and padus are redefined
+# further down in the section that combines match tables from all teh sources in a state
+# to make the final state match table. So actually.... yeah, make sure to remake the multi-state
+# source tables each time! But the actual state parameter is not important.
 
 # TNC - last used 4/2026 farmland id
 dbf1.tnc <- 'POS_join_TNC_SA2022_albers_sp_pt_1to1.dbf'
@@ -54,7 +60,7 @@ dbf3.tnc <- 'POS_join_TNC_SA2022_albers_sp_pt_1toM.dbf'
 dbf4.tnc <- 'TNC_SA2022_albers_sp_join_POS_pt_1toM.dbf'
 pct.csv.tnc <- 'tab_intersect_nepos_v2_0_sp_internal_TNC_SA2022_albers_sp.csv'  # Make sure using correct file
 tnc <- create_spatial_match_table(dbf1.tnc, dbf2.tnc, dbf3.tnc, dbf4.tnc, pct.csv.tnc, nepos,
-                                  source = 'tnc', state = 'RI', save_csv = T)
+                                  source = 'tnc', state = 'MA', save_csv = T)
 
 # NCED - last used 4/2026 farmland id
 dbf1.nced <- 'POS_join_NCED_NE_albers_sp_pt_1to1.dbf'
@@ -63,7 +69,7 @@ dbf3.nced <- 'POS_join_NCED_NE_albers_sp_pt_1toM.dbf'
 dbf4.nced <- 'NCED_NE_albers_sp_join_POS_pt_1toM.dbf'
 pct.csv.nced <- 'tab_intersect_nepos_v2_0_sp_internal_NCED_NE_albers_sp.csv'  # Make sure using correct file
 nced <- create_spatial_match_table_nced(dbf1.nced, dbf2.nced, dbf3.nced, dbf4.nced, pct.csv.nced, nepos,
-                                        source = 'nced', state = 'RI', save_csv = T)
+                                        source = 'nced', state = 'MA', save_csv = T)
 
 # PADUS - last used 4/2026 farmland id
 dbf1.padus <- 'POS_join_PADUS4_0Fee_Easement_NE_sp_pt_1to1.dbf'
@@ -72,7 +78,7 @@ dbf3.padus <- 'POS_join_PADUS4_0Fee_Easement_NE_sp_pt_1toM.dbf'
 dbf4.padus <- 'PADUS4_0Fee_Easement_NE_sp_join_POS_pt_1toM.dbf'
 pct.csv.padus <- 'tab_intersect_nepos_v2_0_sp_internal_PADUS4_0Fee_Easement_NE_sp.csv'  # Make sure using correct file
 padus <- create_spatial_match_table(dbf1.padus, dbf2.padus, dbf3.padus, dbf4.padus, pct.csv.padus, nepos,
-                                    source = 'padus', state = 'RI', save_csv = T)
+                                    source = 'padus', state = 'MA', save_csv = T)
 
 ###### MATCHING TABLES FOR STATE SOURCES
 # CT DEEP - last used 4/2026 farmland id
@@ -157,10 +163,10 @@ nced <- 'nepos_nced_match_table_2025-07-18_full.csv'
 padus <- 'nepos_padus_match_table_2025-07-18_full.csv'
 combine_match_tables('NH', nh, tnc, nced, padus)
 
-massgis <- 'nepos_massgis_match_table_2025-07-18_full.csv'
-tnc <- 'nepos_tnc_match_table_2025-07-18_full.csv'
-nced <- 'nepos_nced_match_table_2025-07-18_full.csv'
-padus <- 'nepos_padus_match_table_2025-07-18_full.csv'
+massgis <- 'nepos_massgis_match_table_2026-04-16_full.csv'
+tnc <- 'nepos_tnc_match_table_2026-04-16_full.csv'
+nced <- 'nepos_nced_match_table_2026-04-16_full.csv'
+padus <- 'nepos_padus_match_table_2026-04-16_full.csv'
 combine_match_tables('MA', massgis, tnc, nced, padus)
 
 vt <- 'nepos_vt_match_table_2025-07-18_full.csv'
