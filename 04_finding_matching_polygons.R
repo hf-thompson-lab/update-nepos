@@ -54,7 +54,7 @@ dbf3.tnc <- 'POS_join_TNC_SA2022_albers_sp_pt_1toM.dbf'
 dbf4.tnc <- 'TNC_SA2022_albers_sp_join_POS_pt_1toM.dbf'
 pct.csv.tnc <- 'tab_intersect_nepos_v2_0_sp_internal_TNC_SA2022_albers_sp.csv'  # Make sure using correct file
 tnc <- create_spatial_match_table(dbf1.tnc, dbf2.tnc, dbf3.tnc, dbf4.tnc, pct.csv.tnc, nepos,
-                                  source = 'tnc', state = 'CT', save_csv = T)
+                                  source = 'tnc', state = 'RI', save_csv = T)
 
 # NCED - last used 4/2026 farmland id
 dbf1.nced <- 'POS_join_NCED_NE_albers_sp_pt_1to1.dbf'
@@ -63,7 +63,7 @@ dbf3.nced <- 'POS_join_NCED_NE_albers_sp_pt_1toM.dbf'
 dbf4.nced <- 'NCED_NE_albers_sp_join_POS_pt_1toM.dbf'
 pct.csv.nced <- 'tab_intersect_nepos_v2_0_sp_internal_NCED_NE_albers_sp.csv'  # Make sure using correct file
 nced <- create_spatial_match_table_nced(dbf1.nced, dbf2.nced, dbf3.nced, dbf4.nced, pct.csv.nced, nepos,
-                                        source = 'nced', state = 'CT', save_csv = T)
+                                        source = 'nced', state = 'RI', save_csv = T)
 
 # PADUS - last used 4/2026 farmland id
 dbf1.padus <- 'POS_join_PADUS4_0Fee_Easement_NE_sp_pt_1to1.dbf'
@@ -72,7 +72,7 @@ dbf3.padus <- 'POS_join_PADUS4_0Fee_Easement_NE_sp_pt_1toM.dbf'
 dbf4.padus <- 'PADUS4_0Fee_Easement_NE_sp_join_POS_pt_1toM.dbf'
 pct.csv.padus <- 'tab_intersect_nepos_v2_0_sp_internal_PADUS4_0Fee_Easement_NE_sp.csv'  # Make sure using correct file
 padus <- create_spatial_match_table(dbf1.padus, dbf2.padus, dbf3.padus, dbf4.padus, pct.csv.padus, nepos,
-                                    source = 'padus', state = 'CT', save_csv = T)
+                                    source = 'padus', state = 'RI', save_csv = T)
 
 ###### MATCHING TABLES FOR STATE SOURCES
 # CT DEEP - last used 4/2026 farmland id
@@ -144,11 +144,11 @@ vt <- create_spatial_match_table(dbf1.vt, dbf2.vt, dbf3.vt, dbf4.vt, pct.csv.vt,
 # and make them into one table using combine_match_tables()
 # THE ORDER OF INPUT TABLES DOES MATTER! See 04 functions script for more details
 
-ri.local <- 'nepos_ri_local_match_table_2025-05-09_full.csv'
-ri.state <- 'nepos_ri_state_match_table_2025-05-09_full.csv'
-tnc <- 'nepos_tnc_match_table_2025-05-09_full.csv'
-nced <- 'nepos_nced_match_table_2025-05-09_full.csv'
-padus <- 'nepos_padus_match_table_2025-05-09_full.csv'
+ri.local <- 'nepos_ri_local_match_table_2026-04-16_full.csv'
+ri.state <- 'nepos_ri_state_match_table_2026-04-16_full.csv'
+tnc <- 'nepos_tnc_match_table_2026-04-16_full.csv'
+nced <- 'nepos_nced_match_table_2026-04-16_full.csv'
+padus <- 'nepos_padus_match_table_2026-04-16_full.csv'
 combine_match_tables('RI', ri.state, tnc, nced, padus, ri.local)
 
 nh <- 'nepos_nh_match_table_2025-07-18_full.csv'
