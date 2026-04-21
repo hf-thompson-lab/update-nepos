@@ -25,9 +25,9 @@
 import arcpy
 
 # Workspace should be wherever development POS lives
-arcpy.env.workspace = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\update_type\\nepos.gdb\\"
+arcpy.env.workspace = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\improve_farm_id\\data.gdb\\"
 
-fc = "nepos_v2_0_sp_internal_20260408"
+fc = "nepos_v2_0_sp_internal"
 
 # Function to update PA type
 # This function does general classifying then does a second round based on keywords and other criteria
@@ -116,8 +116,6 @@ def update_type(state = None, sql = None):
     cem = 0
     p = 0
     r = 0
-    gc = 0
-    cc = 0
     with arcpy.da.UpdateCursor(fc, fields, query) as cur:
         for row in cur:
             ### Wildlands - based on presence of any value (even 0) for WildYear
