@@ -1973,8 +1973,7 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
                     print(f'Assinging match code -1 to {state} Local feature {local_orig_id}')
                     local_match_code = -1
             
-            # Since only state (and local for RI) sources have ProtTypeComments info, we can check for that here if
-            # comments_only == True, to save time checking matches with other sources
+            # We can check for that here if comments_only == True, to save time checking matches with other sources
             # An issue with comments is they can become too long if we just keep overwriting them
             # So we will try to only add comments that aren't already in there
             # There may be additional errors that crop up with this over time and need to be handled...
@@ -2044,6 +2043,7 @@ def update_prot_type(state, state_fc, match_table, local_fc=None, comments_only=
                     final_comment = (' -- ').join(unique_comments)  # Recombine the unique items with same separator
                     row[6] = final_comment                          # Update ProtTypeComments
                     row[7] = todays_date                            # Update Edit_Date
+                    c = c + 1
                     cur.updateRow(row)
                 continue    # Push to next row so code below is not run
             
