@@ -3348,7 +3348,8 @@ def update_prot_duration_from_gap_status(state, new_data_only=True, include_temp
 #### ME ####
 me_conserved_lands = "Maine_Conserved_Lands_albers_sp_2025_03"
 me_match_table = pd.read_csv("D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/tables/nepos_me_matches_2026-04-16.csv",
-                             dtype={'PolySource_FeatID': 'string', 'megis_id': 'string'})
+                             dtype={'FinalID2': 'string', 'PolySource': 'string', 'PolySource_FeatID': 'string',
+                                    'megis_id': 'string', 'tnc_id': 'string', 'nced_id': 'string', 'padus_id': 'string'})
 
 #### MA ####
 massgis = "MassGIS_OpenSpace_albers_sp_2025_01"
@@ -3390,7 +3391,7 @@ pos = "nepos_v2_0_sp_internal"
 # on each attribute as you go, then making a copy before moving onto the next attribute
 # That way if something doesn't work properly, you don't have to start everything over, just that one attribute!
 try:
-    update_prot_type("MA", massgis, ma_match_table, local_fc=None, comments_only=True, overwrite_comments=False, 
+    update_prot_type("CT", ct_deep, ct_match_table, local_fc=None, comments_only=True, overwrite_comments=False, 
                      unknown_only=False, new_data_only=False, take_only_known=False)
 except Exception:
     print(traceback.format_exc())  # Print the error
