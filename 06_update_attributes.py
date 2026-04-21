@@ -3390,7 +3390,7 @@ pos = "nepos_v2_0_sp_internal"
 # on each attribute as you go, then making a copy before moving onto the next attribute
 # That way if something doesn't work properly, you don't have to start everything over, just that one attribute!
 try:
-    update_prot_type("ME", me_conserved_lands, me_match_table, local_fc=None, comments_only=True, overwrite_comments=False, 
+    update_prot_type("MA", massgis, ma_match_table, local_fc=None, comments_only=True, overwrite_comments=False, 
                      unknown_only=False, new_data_only=False, take_only_known=False)
 except Exception:
     print(traceback.format_exc())  # Print the error
