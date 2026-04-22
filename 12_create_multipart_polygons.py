@@ -13,7 +13,7 @@ import sys
 import traceback
 
 # GDB where NEPOS lives
-arcpy.env.workspace = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\update_type\\nepos.gdb\\"
+arcpy.env.workspace = "D:\\Thompson_Lab_POS\\Data\\Old_GDBs_Data\\improve_farm_id\\data.gdb\\"
 arcpy.env.overwriteOutput = True
 
 # Function to print elapsed time running script
@@ -155,13 +155,13 @@ def refine_multipart_attributes(fc):
     arcpy.management.AddField(fc, "type", "TEXT", field_length=30)
     parse_concat_field(fc, "CONCATENATE_type", "type")
 
-    arcpy.management.AddField(fc, "ProtTypeComments", "TEXT", field_length = 200)
+    arcpy.management.AddField(fc, "ProtTypeComments", "TEXT", field_length = 255)
     parse_concat_field(fc, "CONCATENATE_ProtTypeComments", "ProtTypeComments")
 
-    arcpy.management.AddField(fc, "YearProtComments", "TEXT", field_length=300)
+    arcpy.management.AddField(fc, "YearProtComments", "TEXT", field_length=255)
     parse_concat_field(fc, "CONCATENATE_YearProtComments", "YearProtComments")
 
-    arcpy.management.AddField(fc, "FeeOwnCatComments", "TEXT", field_length=200)
+    arcpy.management.AddField(fc, "FeeOwnCatComments", "TEXT", field_length=255)
     parse_concat_field(fc, "CONCATENATE_FeeOwnCatComments", "FeeOwnCatComments")
 
     arcpy.management.AddField(fc, "Comments", "TEXT", field_length=255)
@@ -257,7 +257,7 @@ def compare_acres(sp, mp):
 
 try:
     # POS single part internal
-    pos = "nepos_v2_0_sp_internal_20260408"
+    pos = "nepos_v2_0_sp_internal"
 
     # Separate the parts of NEPOS that will be used
     # for multipart and those that won't
