@@ -129,7 +129,11 @@ def update_type(state = None, sql = None):
     #
     # FinalIDs written on same line are associated with the same PA
     # 
-    # FinalID2 023594 - 023019 are areas misclassified as Farm that are better left as their general type (e.g, PuMu, PrMu)
+    # FinalID2 023594 - 094328 are areas misclassified as Farm that are better left as their general type (e.g, PuMu, PrMu)
+    # FinalID2 001189 - 094328 are Mt Archer in Ct - 35 ac are used as sugarbush but the whole area is >200 ac and it is
+    # not possible to tell by the spatial data where the sugarbush is (at least as of 4/2026) so it is best to leave this
+    # as the more general PuMu type
+    # FinalID2 120360 - 008228 are Meadows Conservation Area (PuMu) misclassified as partially Farm
     skip_rows = ["FinalID2 - 023594",
                  "FinalID2 - 072552", "FinalID2 - 072553",
                  "FinalID2 - 022020", "FinalID2 - 128056", "FinalID2 - 128065",
@@ -139,7 +143,12 @@ def update_type(state = None, sql = None):
                  "FinalID2 - 053247", "FinalID2 - 053248",
                  "FinalID2 - 036994",
                  "FinalID2 - 023199",
-                 "FinalID2 - 023019"]
+                 "FinalID2 - 023019",
+                 "FinalID2 - 001189", "FinalID2 - 001190", "FinalID2 - 001191", "FinalID2 - 001192", "FinalID2 - 001193", "FinalID2 - 001194", "FinalID2 - 001195",
+                 "FinalID2 - 001197", "FinalID2 - 001198", "FinalID2 - 001947", "FinalID2 - 094327", "FinalID2 - 094328",
+                 "FinalID2 - 053173",
+                 "FinalID2 - 120360", "FinalID2 - 008226", "FinalID2 - 008094", "	FinalID2 - 117271", "FinalID2 - 008228",
+                 "FinalID2 - 130130"]
     
     # Variables for counting the number of each type created
     cf = 0
@@ -344,10 +353,7 @@ def correct_type(include_lpt_cf = False):
                      "FinalID2 - 026795",
                      "FinalID2 - 124838",
                      "FinalID2 - 124530",
-                     "FinalID2 - 124637",
-                     "FinalID2 - 053247", "FinalID2 - 053248",
-                     "FinalID2 - 036994",
-                     "FinalID2 - 023199"]
+                     "FinalID2 - 124637"]
 
     # FinalID2s of PAs that should be marked as LPT, polygons that alone are too small to be flagged as LPT
     # but are part of the LPT based on attributes, easement docs, etc.
@@ -403,6 +409,14 @@ def correct_type(include_lpt_cf = False):
     # FinalID2s of PAs that should be marked Rec - Boat
     # Misclassified as farm
     rec_boat_corr_ids = ["FinalID2 - 104520", "FinalID2 - 104521"]
+
+    # FinalID2s or areas that should be classified as Farm
+    # Usually these are identified by looking for type that contains / and it is part of a farm that was not flagged as such
+    farm_corr_ids = ["FinalID2 - 079534",
+                     "FinalID2 - 118769",
+                     "FinalID2 - 012190",
+                     "FinalID2 - 088856",
+                     "FinalID2 - 044786", "FinalID2 - 044788"]
     
 
     # Go through data, checking FinalID2 to find rows for correction
@@ -426,6 +440,10 @@ def correct_type(include_lpt_cf = False):
                 continue
             if row[0] in cemetery_corr_ids:
                 row[1] = "Cemetery"
+                cur.updateRow(row)
+                continue
+            if row[0] in farm_corr_ids:
+                row[1] = 'Farm'
                 cur.updateRow(row)
                 continue
             if include_lpt_cf == True:
