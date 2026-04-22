@@ -12,12 +12,13 @@
 import time
 start_time = time.time()
 import arcpy
+from datetime import date
 
 # GDB where NEPOS lives
-arcpy.env.workspace = "D:/Lee/POS/Update_2023/Data/new_data2.gdb/"
+arcpy.env.workspace = "D:/Thompson_Lab_POS/Data/Old_GDBs_Data/improve_farm_id/data.gdb/"
 
 # Latest singlepart NEPOS
-pos = "POS_v2_29_sp"
+pos = "nepos_v2_0_sp_internal"
 
 def print_elapsed_time():
     end_time = time.time()
