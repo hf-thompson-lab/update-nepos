@@ -70,10 +70,10 @@ def update_type(state = None, sql = None):
     # of subset of rows that inherently excludes LPTs or CFs
     if state is not None and sql is None:
         print(f"State selected: {state}...")
-        query = "((type <> 'LPT' AND type <> 'CF') OR type IS NULL)) AND State = '" + state + "'" 
+        query = "((type <> 'LPT' AND type <> 'Community forest') OR type IS NULL)) AND State = '" + state + "'" 
     elif state is None and sql is None:
         print("Updating type for all states...")
-        query = "(type <> 'LPT' AND type <> 'CF') OR type IS NULL"
+        query = "(type <> 'LPT' AND type <> 'Community forest') OR type IS NULL"
     elif state is not None and sql is not None:
         print(f"State selected: {state}...")
         query = sql + " AND State = '" + state + "'"
@@ -116,9 +116,9 @@ def update_type(state = None, sql = None):
     # These criteria may need to be updated over time if additional keywords, interest holders, etc.
     # become prominent enough in the data that we notice them
     if state is not None:
-        query = "type <> 'LPT' AND type <> 'CF' AND State = '" + state + "'"
+        query = "type <> 'LPT' AND type <> 'Community forest' AND State = '" + state + "'"
     else:
-        query = "type <> 'LPT' AND type <> 'CF'"
+        query = "type <> 'LPT' AND type <> 'Community forest'"
 
 
     # IMPORTANT NOTE: There are some areas that are best NOT assigned to a particular type
@@ -165,7 +165,7 @@ def update_type(state = None, sql = None):
 
             ### Community forests
             if 'community forest' in row[5].lower():
-                row[0] = "CF"
+                row[0] = "Community forest"
                 cf = cf + 1
                 cur.updateRow(row)
                 continue
@@ -434,7 +434,7 @@ def correct_type(include_lpt_cf = False):
                     cur.updateRow(row)
                     continue
                 if row[0] in cf_corr_ids:
-                    row[1] = "CF"
+                    row[1] = "Community forest"
                     cur.updateRow(row)
                     continue
 
