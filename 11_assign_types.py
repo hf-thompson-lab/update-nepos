@@ -148,6 +148,7 @@ def update_type(state = None, sql = None):
     cem = 0
     p = 0
     r = 0
+    cg = 0
     with arcpy.da.UpdateCursor(fc, fields, query) as cur:
         for row in cur:
             # If FinalID2 in skip_rows, continue to next row
@@ -178,7 +179,7 @@ def update_type(state = None, sql = None):
                 continue
             # Based on AreaName or ProtTypeComments and private ownership and GAP
             if ((' APR' in row[5] or 'farmland' in row[5].lower() or 'frpp' in row[5].lower() or 'farm services agency' in row[5].lower()
-                 or 'acep-ale' in row[5].lower() or 'community garden' in row[5].lower()) and row[4] == 'Private' and row[3] not in gap_res):
+                 or 'acep-ale' in row[5].lower()) and row[4] == 'Private' and row[3] not in gap_res):
                 row[0] = "Farm"
                 f = f + 1
                 cur.updateRow(row)
@@ -211,6 +212,13 @@ def update_type(state = None, sql = None):
             if 'playground' in row[5].lower() or 'play ground' in row[5].lower() or 'tot lot' in row[5].lower():
                 row[0] = 'Rec - Playground'
                 p = p + 1
+                cur.updateRow(row)
+                continue
+
+            ### Community gardens
+            if 'community garden' in row[5].lower():
+                row[0] = 'Community garden'
+                cg = cg + 1
                 cur.updateRow(row)
                 continue
 
