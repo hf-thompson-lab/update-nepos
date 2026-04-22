@@ -136,6 +136,39 @@ bow_town_forest = ["Bow Town Forest - Lot 2-122 -- Town of Bow",
                    "Bow Town Forest - Lot 5-64 -- Town of Bow",
                    "Bow Town Forest - Turnpike Lots -- Town of Bow"]
 
+# Danvers Agricultural Reserve -- MA Department of Agricultural Resources
+danvers_ag_res = ["Danvers Agricultural Reserve Field 1 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 2 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 3 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 4 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 5 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 6 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 7 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 8 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 9 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 10 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 11 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 12 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 13 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 14 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 15 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 16 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 17 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 18 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 19 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 20 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 21 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 22 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 23 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 24 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 25 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 26 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 27 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 28 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 29 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 30 -- MA Department of Agricultural Resources",
+                        "Danvers Agricultural Reserve Field 31 -- MA Department of Agricultural Resources"]
+
 # Orbeton Stream - Wagner Timber Partners LLC
 orbeton_stream = ["Orbeton Stream (Gravel Extraction Zone) -- Wagner Timber Partners LLC"]
 
@@ -183,6 +216,8 @@ with arcpy.da.UpdateCursor(pos, "Area_Owner_Name") as cur:
             row[0] = "Biscuit City -- South Kingstown Land Trust"
         elif row[0] in bow_town_forest:
             row[0] = "Bow Town Forest -- Town of Bow"
+        elif row[0] in danvers_ag_res:
+            row[0] = "Danvers Agricultural Reserve -- MA Department of Agricultural Resources"
         elif row[0] in orbeton_stream:
             row[0] = "Orbeton Stream -- Wagner Timber Partners LLC"
         elif row[0] in wmnf_usfs:
