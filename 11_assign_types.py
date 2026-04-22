@@ -178,7 +178,7 @@ def update_type(state = None, sql = None):
                 continue
             # Based on AreaName or ProtTypeComments and private ownership and GAP
             if ((' APR' in row[5] or 'farmland' in row[5].lower() or 'frpp' in row[5].lower() or 'farm services agency' in row[5].lower()
-                 or 'acep-ale' in row[5].lower()) and row[4] == 'Private' and row[3] not in gap_res):
+                 or 'acep-ale' in row[5].lower() or 'community garden' in row[5].lower()) and row[4] == 'Private' and row[3] not in gap_res):
                 row[0] = "Farm"
                 f = f + 1
                 cur.updateRow(row)
