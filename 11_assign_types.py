@@ -42,11 +42,22 @@ fc = "nepos_v2_0_sp_internal"
 # are usually determined through additional research. If you decide to use a custom SQL query and do not
 # exclude LPT and CF types from being updated, you will need to set include_lpt_cf to True in the correct_type()
 # function below.
+#
+# After assigning a general type (e.g., PrMu, PrRes) there are several specific categories that are assigned
+# NOTE: There is a list of FinalID2 called skip_rows that is used to NOT assign a more specific category
+# This is most useful when something is misclassified as a more specific type (usually a farm) and we 
+# want to leave it as the general type. This is safer than manually assigning a row in the next function
+# correct_type() because it is more flexible to a change a GapStatus or ownership that would affect the type.
+# Usually we want to use correct_type() as a last resort (i.e., there's no other way to correct such as rows
+# assigned LPT based on ownership and size) or rows where we are reasonably certain about their true status
+#
+# It is important to periodically check the type assignments to make sure they check out and nothing
+# major has changed
 def update_type(state = None, sql = None):
 
     # Use just the fields we need for calculating type
     fields = ["type", "YearProt", "Area_Ha", "GapStatus", "FeeOwnCat",
-            "AreaName", "FeeOwner", "WildYear", "ProtTypeComments", "IntHolder1", "ProtType"]
+            "AreaName", "FeeOwner", "WildYear", "ProtTypeComments", "IntHolder1", "ProtType", "FinalID2"]
 
     # Create lists of GAP statuses used for reserve / multiple use
     gap_res = [1, 2]
@@ -108,6 +119,27 @@ def update_type(state = None, sql = None):
         query = "type <> 'LPT' AND type <> 'CF' AND State = '" + state + "'"
     else:
         query = "type <> 'LPT' AND type <> 'CF'"
+
+
+    # IMPORTANT NOTE: There are some areas that are best NOT assigned to a particular type
+    # It is safer to not manually correct to individual types as in correct_type() unless it is very
+    # certain we know what the true type is. Leaving something as a general type to be assigned based
+    # on code above allows for leaving it assigned based on the GapStatus and ownership which is more flexibile
+    # e.g., if ownership or GapStatus changes, and reduces chances we will manually set something to incorrect type
+    #
+    # FinalIDs written on same line are associated with the same PA
+    # 
+    # FinalID2 023594 - 023019 are areas misclassified as Farm that are better left as their general type (e.g, PuMu, PrMu)
+    skip_rows = ["FinalID2 - 023594",
+                 "FinalID2 - 072552", "FinalID2 - 072553",
+                 "FinalID2 - 022020", "FinalID2 - 128056", "FinalID2 - 128065",
+                 "FinalID2 - 020715",
+                 "FinalID2 - 053218",
+                 "FinalID2 - 110823", "FinalID2 - 110824", "FinalID2 - 110953",
+                 "FinalID2 - 053247", "FinalID2 - 053248",
+                 "FinalID2 - 036994",
+                 "FinalID2 - 023199",
+                 "FinalID2 - 023019"]
     
     # Variables for counting the number of each type created
     cf = 0
@@ -118,6 +150,10 @@ def update_type(state = None, sql = None):
     r = 0
     with arcpy.da.UpdateCursor(fc, fields, query) as cur:
         for row in cur:
+            # If FinalID2 in skip_rows, continue to next row
+            if row[11] in skip_rows:
+                continue
+
             ### Wildlands - based on presence of any value (even 0) for WildYear
             # Keep this one first because wildlands might also be tagged as something else (e.g., part of a protected farm)
             if row[7] is not None:
@@ -272,6 +308,11 @@ def update_type(state = None, sql = None):
 # list below so that it gets recategorized to LPT (or another type). It is also important that these corrections
 # be based on FinalID2 because FinalID can change - it is recalculated each time multipart polygons are created. FinalID2
 # is the permanent unique ID on a polygon level - the multipart ID (FinalID) does not have the same permanence.
+# NOTE: This function should be used only if necessary! If possible, it is preferable to just add FinalID2s to the skip_rows
+# list in the function above, so they retain a more general type. Most often, confusion occurs between PrMu, LPTs, and CFs
+# because these can share ownership, GapStatus, and size criteria. However, specific correction of other specific types
+# may also need to be handled here. Correcting to a more general type should, if possible, be handled in the function above
+# so that if GapStatus or ownership change, we are not manually assigning an incorrect type.
 # Argument: include_lpt_cf (boolean) - should the type correction by FinalID2 also do LPT and CF types?
 #           the general type categorization function above by default does not overwrite LPT and CF PAs since these
 #           are usually determined based on additional research. The only time these would get overwritten is
@@ -295,16 +336,10 @@ def correct_type(include_lpt_cf = False):
                      "FinalID2 - 026795",
                      "FinalID2 - 124838",
                      "FinalID2 - 124530",
-                     "FinalID2 - 124637"]
-
-    # FinalID2s of PAs that should be marked as PrRes
-    prres_corr_ids = []
-
-    # FinalID2s of PAs that should be marked as PuMu
-    pumu_corr_ids = []
-
-    # FinalID2s of PAs that should be marked as PuRes
-    pures_corr_ids = []
+                     "FinalID2 - 124637",
+                     "FinalID2 - 053247", "FinalID2 - 053248",
+                     "FinalID2 - 036994",
+                     "FinalID2 - 023199"]
 
     # FinalID2s of PAs that should be marked as LPT, polygons that alone are too small to be flagged as LPT
     # but are part of the LPT based on attributes, easement docs, etc.
@@ -344,12 +379,45 @@ def correct_type(include_lpt_cf = False):
                    "FinalID2 - 069635", "FinalID2 - 069636", "FinalID2 - 069637", "FinalID2 - 069638", "FinalID2 - 069639", "FinalID2 - 069640",
                    "FinalID2 - 069641", "FinalID2 - 069642", "FinalID2 - 069643", "FinalID2 - 069644", "FinalID2 - 069645", "FinalID2 - 069646",
                    "FinalID2 - 069647", "FinalID2 - 069648", "FinalID2 - 069649", "FinalID2 - 069650"]
+    
+    # FinalID2s of PAs that should be marked as Cemetery
+    # Snell Cemetery (MA) gets misclassified as Farm by NCED
+    cemetery_corr_ids = ["FinalID2 - 083323"]
+    
+    # FinalID2s of PAs that should be marked as Rec - Field
+    # Charlotte Little League fields in VT, mistakenly assigned Farm by NCED
+    rec_field_corr_ids = ["FinalID2 - 020951"]
+
+    # FinalID2s of PAs that should be marked Rec - Golf
+    # Misclassified as farm
+    rec_golf_corr_ids = ["FinalID2 - 069476"]
+
+    # FinalID2s of PAs that should be marked Rec - Boat
+    # Misclassified as farm
+    rec_boat_corr_ids = ["FinalID2 - 104520", "FinalID2 - 104521"]
+    
 
     # Go through data, checking FinalID2 to find rows for correction
     with arcpy.da.UpdateCursor(fc, corr_fields) as cur:
         for row in cur:
             if row[0] in prmu_corr_ids:
                 row[1] = "PrMu"
+                cur.updateRow(row)
+                continue
+            if row[0] in rec_field_corr_ids:
+                row[1] = "Rec - Field"
+                cur.updateRow(row)
+                continue
+            if row[0] in rec_golf_corr_ids:
+                row[1] = "Rec - Golf"
+                cur.updateRow(row)
+                continue
+            if row[0] in rec_boat_corr_ids:
+                row[1] = "Rec - Boat"
+                cur.updateRow(row)
+                continue
+            if row[0] in cemetery_corr_ids:
+                row[1] = "Cemetery"
                 cur.updateRow(row)
                 continue
             if include_lpt_cf == True:
