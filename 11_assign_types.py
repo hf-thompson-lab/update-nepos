@@ -294,7 +294,7 @@ def update_type(state = None, sql = None):
 
             ### Military (fee)??
                 
-        print(f"Updated type for {w} wildlands, {f} farmlands, {cf} community forests, {cem} cemeteries, {p} playgrounds, {r} other recreation facilities")
+        print(f"Updated type for {w} wildlands, {f} farmlands, {cf} community forests, {cg} community gardens, {cem} cemeteries, {p} playgrounds, {r} other recreation facilities")
 
 # Corrections by unique ID
 # There is a list for each "type" where you can put FinalID2 of polygons that should be changed to that type
