@@ -47,6 +47,16 @@ def print_elapsed_time():
 # OR the attributes are too general to definitively say an area is one area based solely on those attributes
 # (e.g., rows where FeeOwner is general 'Private' and AreaName is something like 'Vermont Land Trust Easement')
 #
+# This function can also be used if there are multiple rows that have the same attributes in terms of dissolve
+# attributes, but we want to keep them separate -- this is the case with Boesch Farm, which is 2 tracts all with same
+# dissolve attributes (AreaName, FeeOwner, YearProt, PubAccess, etc.) but
+# one tract is a farm DDR in ProtTypeComments and the other is forest and not flagged as such. Rather than change type of
+# one of the tracts in the assign_type.py script, we can use export_subsets() to force such areas into the subset
+# that gets additional check by PolySource. Since by definition these do not come from the same polygon, they will
+# be left separate in POS_final. Note that this issue was identified by inspecting POS_final for rows where type LIKE '%/%'
+# Looking for rows where there are multiple types separated by / helps us find issues like this and is a necessary step of QAQC
+# of the creating multipart polygons process.
+#
 # The function uses one query that defines these rows that need an extra check, and uses the inverse function
 # in Select by Attribute to export the opposite of the query
 #
@@ -73,7 +83,8 @@ def export_subsets(nepos):
     " OR AreaName = 'Upper Valley Land Trust' OR AreaName LIKE 'Unknown%' OR AreaName = 'Pennichuck Water Works' OR AreaName = 'Barnstable Land Trust CR'"
     " OR AreaName = 'Blue Hills Foundation' OR AreaName = 'Nissitissit River Land Trust' OR AreaName = 'Southside Community Land Trust'"
     " OR AreaName = 'Grafton Pond Land Trust' OR AreaName = 'Middlebury Area Land Trust' OR AreaName = 'Stowe Land Trust' OR AreaName = 'Goshen Land Trust'"
-    " OR AreaName = 'Land Trust' OR AreaName = 'Litchfield Land Trust' OR AreaName = 'Sharon Land Trust' OR AreaName = 'Wyndham Land Trust'"
+    " OR AreaName = 'Land Trust' OR AreaName = 'Litchfield Land Trust' OR AreaName = 'Sharon Land Trust' OR AreaName = 'Wyndham Land Trust'" 
+    " OR AreaName  = 'Boesch Farm'"
     " OR YearProt = 0")
 
     # Export the rows that fit the query
