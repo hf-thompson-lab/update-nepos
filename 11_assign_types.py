@@ -134,6 +134,9 @@ def update_type(state = None, sql = None):
     # not possible to tell by the spatial data where the sugarbush is (at least as of 4/2026) so it is best to leave this
     # as the more general PuMu type
     # FinalID2 120360 - 008228 are Meadows Conservation Area (PuMu) misclassified as partially Farm
+    # FinalID2 025130 - 025173 are Jones Farm Easement in ME -- partially farm, partially PrMu. Is mostly forest and ME does
+    #    have GAP 39 which is not used here (Farm desg comes from NCED). Leaving as is.
+    # Similar situation for FinalID2 102497 - 102501 (Waterhouse Farm)
     skip_rows = ["FinalID2 - 023594",
                  "FinalID2 - 072552", "FinalID2 - 072553",
                  "FinalID2 - 022020", "FinalID2 - 128056", "FinalID2 - 128065",
@@ -147,8 +150,11 @@ def update_type(state = None, sql = None):
                  "FinalID2 - 001189", "FinalID2 - 001190", "FinalID2 - 001191", "FinalID2 - 001192", "FinalID2 - 001193", "FinalID2 - 001194", "FinalID2 - 001195",
                  "FinalID2 - 001197", "FinalID2 - 001198", "FinalID2 - 001947", "FinalID2 - 094327", "FinalID2 - 094328",
                  "FinalID2 - 053173",
-                 "FinalID2 - 120360", "FinalID2 - 008226", "FinalID2 - 008094", "	FinalID2 - 117271", "FinalID2 - 008228",
-                 "FinalID2 - 130130"]
+                 "FinalID2 - 120360", "FinalID2 - 008226", "FinalID2 - 008094", "FinalID2 - 117271", "FinalID2 - 008228",
+                 "FinalID2 - 130130",
+                 "FinalID2 - 025130", "FinalID2 - 025131", "FinalID2 - 025132", "FinalID2 - 025166", "FinalID2 - 025167", "FinalID2 - 025168", "FinalID2 - 025169",
+                 "FinalID2 - 025170", "FinalID2 - 025171", "FinalID2 - 025172", "FinalID2 - 025173",
+                 "FinalID2 - 102497", "FinalID2 - 102498", "FinalID2 - 102499", "FinalID2 - 102500", "FinalID2 - 102501"]
     
     # Variables for counting the number of each type created
     cf = 0
@@ -412,11 +418,13 @@ def correct_type(include_lpt_cf = False):
 
     # FinalID2s or areas that should be classified as Farm
     # Usually these are identified by looking for type that contains / and it is part of a farm that was not flagged as such
+    # FinalID2 - 113629 is one tract of 4 in which 3 are FRPP tracts - this one is not flagged but given majority of area is farm, we change to farm to match others
     farm_corr_ids = ["FinalID2 - 079534",
                      "FinalID2 - 118769",
                      "FinalID2 - 012190",
                      "FinalID2 - 088856",
-                     "FinalID2 - 044786", "FinalID2 - 044788"]
+                     "FinalID2 - 044786", "FinalID2 - 044788",
+                     "FinalID2 - 113629"]
     
 
     # Go through data, checking FinalID2 to find rows for correction
