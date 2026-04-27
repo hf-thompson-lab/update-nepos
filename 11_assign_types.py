@@ -185,6 +185,14 @@ def update_type(state = None, sql = None):
                 cur.updateRow(row)
                 continue
 
+            ### Community gardens
+            # Do these before farms because some have GAP 39
+            if 'community garden' in row[5].lower():
+                row[0] = 'Community garden'
+                cg = cg + 1
+                cur.updateRow(row)
+                continue
+
             ### Farmland
             # Based on GAP status
             if row[3] == 39:
@@ -227,13 +235,6 @@ def update_type(state = None, sql = None):
             if 'playground' in row[5].lower() or 'play ground' in row[5].lower() or 'tot lot' in row[5].lower():
                 row[0] = 'Rec - Playground'
                 p = p + 1
-                cur.updateRow(row)
-                continue
-
-            ### Community gardens
-            if 'community garden' in row[5].lower():
-                row[0] = 'Community garden'
-                cg = cg + 1
                 cur.updateRow(row)
                 continue
 
