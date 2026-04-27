@@ -424,7 +424,12 @@ def correct_type(include_lpt_cf = False):
                      "FinalID2 - 012190",
                      "FinalID2 - 088856",
                      "FinalID2 - 044786", "FinalID2 - 044788",
-                     "FinalID2 - 113629"]
+                     "FinalID2 - 113629",
+                     "FinalID2 - 041076"]
+    
+    # FinalID2s that should be Tribal
+    # FinalID2 - 063600 is Nulheganaki land that NCED marks Farm
+    tribal_corr_ids = ["FinalID2 - 063600"]
     
 
     # Go through data, checking FinalID2 to find rows for correction
@@ -452,6 +457,10 @@ def correct_type(include_lpt_cf = False):
                 continue
             if row[0] in farm_corr_ids:
                 row[1] = 'Farm'
+                cur.updateRow(row)
+                continue
+            if row[0] in tribal_corr_ids:
+                row[1] = 'Tribal'
                 cur.updateRow(row)
                 continue
             if include_lpt_cf == True:
